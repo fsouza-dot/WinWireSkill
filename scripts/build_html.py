@@ -1049,10 +1049,21 @@ def build_page1_content(version, partner_key, data):
 
     metrics_html = build_metrics_html(metrics_items)
 
-    # Quote
-    quote = data["quote"]
-    quote_company = h(quote.get("company", ""))
-    company_suffix = f", {quote_company}" if quote_company else ""
+    # Quote — only render if there's actual quote text
+    quote = data.get("quote", {})
+    quote_text = quote.get("text", "").strip() if quote.get("text") else ""
+    if quote_text:
+        quote_company = h(quote.get("company", ""))
+        company_suffix = f", {quote_company}" if quote_company else ""
+        quote_html = f"""
+    <div class="quote-section">
+      <span class="quote-mark">&ldquo;</span>
+      <p class="quote-text">{h(quote_text)}</p>
+      <p class="quote-attr"><strong>{h(quote.get("author", ""))}</strong>, {h(quote.get("title", ""))}{company_suffix}</p>
+    </div>
+"""
+    else:
+        quote_html = ""
 
     # Context bar
     if is_partner and "context_bar_partner" in data:
@@ -1083,13 +1094,7 @@ def build_page1_content(version, partner_key, data):
     <div class="metrics">
 {metrics_html}
     </div>
-
-    <div class="quote-section">
-      <span class="quote-mark">&ldquo;</span>
-      <p class="quote-text">{h(quote["text"])}</p>
-      <p class="quote-attr"><strong>{h(quote["author"])}</strong>, {h(quote["title"])}{company_suffix}</p>
-    </div>
-
+{quote_html}
     <div class="context-bar">
 {context_html}
     </div>
