@@ -310,7 +310,8 @@ every number that will appear in the WinWire:
 - **Metrics (partner)** — all three values and labels (Annual Cloud Revenue must be present), if building a partner version
 - **Quote** — text, author, title, company
 - **Context bar** — every label/value pair, for every version being produced
-- **Page 2 (if included)** — approach phases, business-outcome cards (before/after pairs), tech architecture cards
+- **Page 2 (if included)** — left section content, business-outcome cards, tech architecture cards
+- **Page 2 left section** — show the auto-detected type (challenges, scale, speed, milestones, innovation, compliance, integration, or phases) and ask if the user wants to change it
 
 Format it clearly — headings and prose, not raw JSON. The user needs to be able to scan and
 point to what they want changed.

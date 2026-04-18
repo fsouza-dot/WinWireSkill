@@ -71,24 +71,22 @@ The build_html.py script expects a JSON file with this structure. All fields mar
     "include": true,
     "deep_dive_title": "NovaPay Cloud Migration",
 
-    "approach_title": "Project Approach",
+    "page2_left": {
+      "type": "challenges",  // or: milestones, innovation, scale, integration, compliance, speed, phases
+      "title": "Challenges Conquered",
+      "items": [
+        {"headline": "Zero-Downtime Migration", "detail": "Migrated 2TB live database without service interruption"},
+        {"headline": "PCI Compliance", "detail": "Achieved certification in 3 weeks vs typical 3 months"},
+        {"headline": "Legacy Integration", "detail": "Connected 12 legacy systems via event-driven architecture"}
+      ]
+    },
+
+    // Fallback if page2_left not provided:
     "phases": [
-      {
-        "name": "Discovery & Domain Mapping",
-        "description": "4 weeks of event storming sessions..."
-      },
-      {
-        "name": "Foundation & Platform",
-        "description": "Built the EKS-based platform..."
-      },
-      {
-        "name": "Core Services Migration",
-        "description": "Migrated the 8 highest-value services..."
-      },
-      {
-        "name": "Optimization & Handoff",
-        "description": "Performance tuning, chaos engineering..."
-      }
+      {"name": "Discovery & Domain Mapping", "description": "4 weeks of event storming sessions..."},
+      {"name": "Foundation & Platform", "description": "Built the EKS-based platform..."},
+      {"name": "Core Services Migration", "description": "Migrated the 8 highest-value services..."},
+      {"name": "Optimization & Handoff", "description": "Performance tuning, chaos engineering..."}
     ],
 
     "metrics_table": [

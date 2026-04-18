@@ -76,9 +76,20 @@ Use these as anchors — find supporting details, metrics, and quotes that reinf
 
 ### MEDIUM (page 2 — depth)
 
-9. **Project phases**
-   - Discovery, build, migrate, optimize, handoff — with descriptions
-   - Look in: project plan, SOW work breakdown, timeline sections
+9. **Page 2 left section** — Pick the BEST content type based on what makes this project impressive:
+
+   | Type | When to Use | What to Extract |
+   |------|-------------|-----------------|
+   | `milestones` | Project had impressive timeline/speed | Key dates + achievements |
+   | `challenges` | Complex technical problems solved | Problem + solution pairs |
+   | `innovation` | Novel approach, first-of-its-kind | What was new + why it matters |
+   | `scale` | Impressive numbers (users, TPS, data) | Big metrics with before/after |
+   | `integration` | Connected many systems | Systems/services connected |
+   | `compliance` | Regulatory/security achievements | Certifications + timeline |
+   | `speed` | Notably fast delivery | Week-by-week milestones |
+   | `phases` | Generic fallback | Discovery, build, migrate, optimize |
+
+   **Selection logic:** Score each type by how much compelling content you find. Pick the type with the richest, most impressive story. Sales teams want concrete achievements that help them sell — prioritize types with hard numbers and clear wins.
 
 10. **Before/after metrics**
     - Any quantitative improvements: throughput, latency, cost, uptime, deployment frequency
@@ -114,10 +125,14 @@ Return valid JSON only — no markdown, no explanation:
   "title": "Suggested title with metric",
   "subtitle": "2-3 sentence overview",
   "tags": ["Tag1", "Tag2", "..."],
-  "phases": [
-    {"name": "Phase name", "description": "What happened"},
-    ...
-  ],
+  "page2_left": {
+    "type": "challenges|milestones|innovation|scale|integration|compliance|speed|phases",
+    "title": "Section title (e.g., 'Challenges Conquered', 'Scale Achieved')",
+    "items": [
+      {"headline": "Short punchy headline", "detail": "Supporting detail or number"},
+      ...
+    ]
+  },
   "metrics_table": [
     {"metric": "What measured", "before": "Old value", "after": "New value"},
     ...

@@ -190,7 +190,7 @@ def build_context_bar(items):
 
 
 def build_phases_html(phases):
-    """Build the numbered approach phases."""
+    """Build the numbered approach phases (fallback content type)."""
     parts = []
     for i, phase in enumerate(phases, 1):
         parts.append(f"""        <div class="phase">
@@ -201,6 +201,64 @@ def build_phases_html(phases):
           </div>
         </div>""")
     return "\n".join(parts)
+
+
+def build_page2_left_section(page2_left, fallback_phases=None):
+    """Build the dynamic page 2 left section based on content type."""
+    if not page2_left or not page2_left.get("items"):
+        if fallback_phases:
+            return build_phases_html(fallback_phases), "Project Approach"
+        return "", "Project Approach"
+
+    content_type = page2_left.get("type", "phases")
+    title = page2_left.get("title", "Project Approach")
+    items = page2_left.get("items", [])
+
+    if content_type == "phases" or not items:
+        if fallback_phases:
+            return build_phases_html(fallback_phases), title
+        return "", title
+
+    # All other types use a card-based layout
+    parts = []
+    for item in items:
+        headline = h(item.get("headline", ""))
+        detail = h(item.get("detail", ""))
+
+        if content_type == "scale":
+            # Big number emphasis
+            parts.append(f"""        <div class="highlight-card highlight-scale">
+          <div class="highlight-value">{headline}</div>
+          <div class="highlight-label">{detail}</div>
+        </div>""")
+        elif content_type == "speed":
+            # Timeline style
+            parts.append(f"""        <div class="highlight-card highlight-timeline">
+          <div class="timeline-marker"></div>
+          <div class="highlight-body">
+            <strong>{headline}</strong>
+            <span>{detail}</span>
+          </div>
+        </div>""")
+        elif content_type == "compliance":
+            # Checkmark style
+            parts.append(f"""        <div class="highlight-card highlight-check">
+          <div class="check-icon">✓</div>
+          <div class="highlight-body">
+            <strong>{headline}</strong>
+            <span>{detail}</span>
+          </div>
+        </div>""")
+        else:
+            # Default card style for challenges, milestones, innovation, integration
+            parts.append(f"""        <div class="highlight-card">
+          <div class="highlight-body">
+            <strong>{headline}</strong>
+            <p>{detail}</p>
+          </div>
+        </div>""")
+
+    return "\n".join(parts), title
 
 
 def build_metrics_table(rows):
@@ -686,6 +744,78 @@ def build_css(version, partner_key=None):
   .phase-body h4 {{ font-size: 14px; font-weight: 600; margin-bottom: 2px; }}
   .phase-body p {{ font-size: 13px; color: var(--text-secondary); line-height: 1.45; }}
 
+  /* Dynamic page2 left section cards */
+  .highlight-card {{
+    background: var(--bg);
+    border: 1px solid var(--surface-border);
+    border-left: 3px solid {metric_color};
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }}
+  .highlight-card:last-child {{ margin-bottom: 0; }}
+  .highlight-body strong {{
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }}
+  .highlight-body p,
+  .highlight-body span {{
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }}
+  .highlight-scale {{
+    text-align: center;
+    padding: 18px 16px;
+  }}
+  .highlight-scale .highlight-value {{
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: {metric_color};
+    line-height: 1.1;
+  }}
+  .highlight-scale .highlight-label {{
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }}
+  .highlight-timeline {{
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-left: 12px;
+  }}
+  .timeline-marker {{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: {metric_color};
+    flex-shrink: 0;
+    margin-top: 5px;
+  }}
+  .highlight-check {{
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }}
+  .check-icon {{
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: {metric_color};
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }}
+
   .ext-metrics {{
     padding: 32px 40px;
     border-bottom: 1px solid var(--surface-border);
@@ -881,6 +1011,15 @@ def build_css(version, partner_key=None):
     .phase-num {{ width: 22px; height: 22px; font-size: 11px; }}
     .phase-body h4 {{ font-size: 11px; }}
     .phase-body p {{ font-size: 10px; line-height: 1.4; }}
+
+    .highlight-card {{ padding: 10px 12px; margin-bottom: 6px; }}
+    .highlight-body strong {{ font-size: 11px; margin-bottom: 2px; }}
+    .highlight-body p, .highlight-body span {{ font-size: 9px; }}
+    .highlight-scale {{ padding: 12px 10px; }}
+    .highlight-scale .highlight-value {{ font-size: 22px; }}
+    .highlight-scale .highlight-label {{ font-size: 10px; }}
+    .timeline-marker {{ width: 8px; height: 8px; margin-top: 4px; }}
+    .check-icon {{ width: 16px; height: 16px; font-size: 9px; }}
 
     .ext-metrics {{ padding: 16px 18px; }}
     .ext-metrics h3 {{ font-size: 13px; margin-bottom: 10px; }}
@@ -1114,17 +1253,18 @@ def build_page2(version, partner_key, data):
     # Titles
     if is_partner:
         deep_dive_title = f"Deep Dive: {theme['page2_title_suffix']}"
-        approach_title = theme["approach_title"]
         metrics_title = theme["metrics_title"]
         tech_title = theme["tech_title"]
     else:
         deep_dive_title = f"Deep Dive: {h(page2.get('deep_dive_title', ''))}"
-        approach_title = page2.get("approach_title", "Project Approach")
         metrics_title = "Full Metrics"
         tech_title = "Technology Architecture"
 
-    # Phases
-    phases_html = build_phases_html(page2.get("phases", []))
+    # Dynamic left section — uses page2_left if available, falls back to phases
+    left_section_html, left_section_title = build_page2_left_section(
+        page2.get("page2_left"),
+        fallback_phases=page2.get("phases", [])
+    )
 
     # Business outcome cards (replaces the old before/after table)
     outcome_cards = build_outcome_cards(page2.get("metrics_table", []))
@@ -1153,8 +1293,8 @@ def build_page2(version, partner_key, data):
     <div class="page2-content">
 
       <div class="approach">
-        <h3>{h(approach_title)}</h3>
-{phases_html}
+        <h3>{h(left_section_title)}</h3>
+{left_section_html}
       </div>
 
       <div class="ext-metrics">
