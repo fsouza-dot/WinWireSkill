@@ -142,7 +142,7 @@ populated:
   bytes. Example:
 
   ```bash
-  python - <<'PY'
+  python3 - <<'PY'
   import urllib.request, sys, pathlib
   url = "<URL_FROM_TEMPLATE>"
   out = pathlib.Path("<WORKSPACE>/client-logo.<ext>")
@@ -209,6 +209,9 @@ This skill runs on Windows, macOS, and Linux. Path examples use forward slashes 
 readability, but the Python scripts use `pathlib.Path` internally and handle both separators.
 When invoking scripts, use paths appropriate for your OS (e.g., `C:\Users\...` on Windows).
 
+**Python command:** Always use `python3` (not `python`). This works on macOS, Linux, and
+modern Windows Python installations.
+
 ## Workflow
 
 Follow this sequence. The user stays in control of content decisions at every step.
@@ -218,7 +221,7 @@ Follow this sequence. The user stays in control of content decisions at every st
 Ask the user if they have a filled-in WinWire template (.xlsx). If not, generate one for them:
 
 ```bash
-python <SKILL_DIR>/scripts/create_template.py --output <WORKSPACE>/winwire-template.xlsx
+python3 <SKILL_DIR>/scripts/create_template.py --output <WORKSPACE>/winwire-template.xlsx
 ```
 
 Present the template file and explain: "This is a quick form — just fill in the deal numbers
@@ -233,7 +236,7 @@ Once the user provides the filled template and any supporting documents:
 
 1. **Read the template** using openpyxl:
    ```bash
-   python <SKILL_DIR>/scripts/ingest.py --template <path-to-xlsx> --output <WORKSPACE>/project-data.json
+   python3 <SKILL_DIR>/scripts/ingest.py --template <path-to-xlsx> --output <WORKSPACE>/project-data.json
    ```
 
 2. **Spawn an extraction agent** to read all attached documents. Use Haiku for cost efficiency:
@@ -348,7 +351,7 @@ and every requested partner version, all in this single step. No further approva
 1. Internal HTML:
 
    ```bash
-   python <SKILL_DIR>/scripts/build_html.py \
+   python3 <SKILL_DIR>/scripts/build_html.py \
      --data <path-to-data.json> \
      --version internal \
      --template-dir <SKILL_DIR>/assets \
@@ -358,7 +361,7 @@ and every requested partner version, all in this single step. No further approva
 2. Internal PDF:
 
    ```bash
-   python <SKILL_DIR>/scripts/build_pdf.py \
+   python3 <SKILL_DIR>/scripts/build_pdf.py \
      --html <WORKSPACE>/winwire-cit-internal.html \
      --output <WORKSPACE>/winwire-cit-internal.pdf
    ```
@@ -366,14 +369,14 @@ and every requested partner version, all in this single step. No further approva
 3. For each requested partner (aws, gcp, azure), build both HTML and PDF:
 
    ```bash
-   python <SKILL_DIR>/scripts/build_html.py \
+   python3 <SKILL_DIR>/scripts/build_html.py \
      --data <path-to-data.json> \
      --version partner \
      --partner aws \
      --template-dir <SKILL_DIR>/assets \
      --output <WORKSPACE>/winwire-aws-partner.html
 
-   python <SKILL_DIR>/scripts/build_pdf.py \
+   python3 <SKILL_DIR>/scripts/build_pdf.py \
      --html <WORKSPACE>/winwire-aws-partner.html \
      --output <WORKSPACE>/winwire-aws-partner.pdf
    ```
@@ -437,7 +440,7 @@ When writing challenge/solution blocks, titles, or subtitles from user highlight
 The scripts require these Python packages. Install them if not already available:
 
 ```bash
-pip install openpyxl playwright pypdf
+pip3 install openpyxl playwright pypdf
 playwright install chromium
 ```
 
