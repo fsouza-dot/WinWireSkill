@@ -17,7 +17,7 @@ try:
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 except ImportError:
-    print("Error: openpyxl is required. Install with: pip install openpyxl --break-system-packages",
+    print("Error: openpyxl is required. Install with: pip install openpyxl",
           file=sys.stderr)
     sys.exit(1)
 

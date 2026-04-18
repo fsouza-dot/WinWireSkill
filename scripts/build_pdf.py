@@ -37,7 +37,7 @@ async def generate_page(browser, html_path, pdf_path, hide_selector, measure_sel
     page_width_px = int(PAGE_WIDTH_MM * 96 / 25.4)
     page = await browser.new_page()
     await page.set_viewport_size({"width": page_width_px, "height": 4000})
-    await page.goto(f"file://{html_path}", wait_until="networkidle")
+    await page.goto(html_path.as_uri(), wait_until="networkidle")
     await page.wait_for_timeout(1000)
 
     # Hide the other page

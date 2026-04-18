@@ -203,6 +203,12 @@ In the JSON data, set `logos.client_logo_url` to one of:
 
 The script logs a warning to stderr if the path can't be resolved — watch for those.
 
+## Cross-platform notes
+
+This skill runs on Windows, macOS, and Linux. Path examples use forward slashes (`/`) for
+readability, but the Python scripts use `pathlib.Path` internally and handle both separators.
+When invoking scripts, use paths appropriate for your OS (e.g., `C:\Users\...` on Windows).
+
 ## Workflow
 
 Follow this sequence. The user stays in control of content decisions at every step.
@@ -230,19 +236,22 @@ Once the user provides the filled template and any supporting documents:
    python <SKILL_DIR>/scripts/ingest.py --template <path-to-xlsx> --output <WORKSPACE>/project-data.json
    ```
 
-2. **Read all attached documents** — SOWs, decks, PDFs, notes, whatever they provide.
-   Extract from them:
-   - **Challenge narrative**: What problem the client faced, business impact, urgency
-   - **Solution narrative**: What CI&T built, architectural approach, methodology
-   - **Technologies used**: Specific services, tools, platforms mentioned
-   - **Project phases**: Discovery, build, migrate, optimize — with descriptions
-   - **Before/after metrics**: Any measurable improvements mentioned
-   - **Tech architecture details**: How services were used, design patterns
-   - **Client quotes**: Any testimonials, feedback, or praise from the client
-   - **Tags**: Infer from industry, partner, project type, and technologies
+2. **Spawn an extraction agent** to read all attached documents. Use Haiku for cost efficiency:
 
-3. **Merge template data with doc-extracted content.** Template values always take priority
-   (they're the user's explicit input). Doc content fills the gaps.
+   ```
+   Agent({
+     description: "Extract WinWire content from project docs",
+     model: "haiku",
+     prompt: <use template from references/extraction-agent-prompt.md>
+   })
+   ```
+
+   The agent reads ALL docs in parallel, synthesizes across them, and returns structured JSON
+   with the most compelling content for storytelling. See `references/extraction-agent-prompt.md`
+   for the full prompt template and output schema.
+
+3. **Merge results.** Template values (user input) always take priority over extracted values.
+   Check the agent's `missing` array — if CRITICAL items are missing, ask the user directly.
 
 ### Step 3: Refine the summary and present for approval
 
@@ -381,44 +390,16 @@ approval, then rebuild.
 
 ## Content extraction strategy
 
-When reading attached documents, look for content in this priority order:
+The extraction agent (Haiku) handles document analysis. See `references/extraction-agent-prompt.md`
+for the full prompt template, priority tiers, and output schema.
 
-### Challenge (what was the problem?)
-Look for: pain points, limitations, legacy systems, scaling issues, compliance gaps,
-cost concerns, business risks. Common locations: executive summary, problem statement,
-current state analysis, project justification sections.
+**Priority tiers:**
+- **CRITICAL**: Revenue figures, Challenge/Solution narratives, Technologies, Client quote
+- **HIGH**: Title, Subtitle, Tags
+- **MEDIUM**: Project phases, Before/after metrics, Tech architecture
 
-### Solution (what did CI&T build?)
-Look for: architecture descriptions, service lists, methodology, patterns used (microservices,
-event-driven, serverless), CI/CD approach. Common locations: technical approach, proposed
-solution, architecture diagrams (read captions/labels), deliverables sections.
-
-### Technologies
-Look for: specific cloud service names (Amazon EKS, Lambda, DynamoDB, BigQuery, Azure Functions),
-tools (Terraform, ArgoCD, Grafana), frameworks. Extract the complete list.
-
-### Project phases
-Look for: timeline, milestones, sprint structure, phase descriptions (discovery, build,
-migrate, test, optimize, handoff). Common locations: project plan, SOW work breakdown,
-timeline sections.
-
-### Metrics (before/after)
-Look for: performance numbers, SLAs, throughput, latency, cost savings, deployment frequency,
-uptime. Any quantitative comparison between old and new state.
-
-### Revenue figures (mandatory — see "Non-negotiable rule" above)
-Look for: Total Contract Value (TCV), ACV, Services Revenue, deal size, booked revenue
-(→ Services Revenue for internal version); Annual Cloud Revenue (ACR), cloud run-rate,
-projected cloud spend, consumption commit (→ Annual Cloud Revenue for partner version).
-Common locations: SOW pricing tables, deal desk approvals, MAP/ISV applications, partner
-registrations, executive summary commercials.
-
-### Client quotes
-Look for: direct quotes, testimonials, feedback emails, NPS comments, case study endorsements.
-
-### Architecture details
-Look for: how specific services are used, design patterns, data flow, security approach,
-observability setup. Group into categories (Compute, Data, Events, Security, Observability, CI/CD).
+The agent synthesizes across all attached documents to find the most compelling content for
+storytelling. It returns structured JSON that you merge with template data.
 
 ## Content and design references
 
@@ -456,9 +437,11 @@ When writing challenge/solution blocks, titles, or subtitles from user highlight
 The scripts require these Python packages. Install them if not already available:
 
 ```bash
-pip install openpyxl playwright pypdf --break-system-packages
+pip install openpyxl playwright pypdf
 playwright install chromium
 ```
+
+On Linux with system Python, you may need `--break-system-packages` or use a virtual environment.
 
 ## Anonymized versions
 
