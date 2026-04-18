@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WinWire — NovaPay Cloud Migration | CI&T</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Tokens ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff;
+    --surface: #B4DCFA;
+    --surface-alt: #f5f5f7;
+    --surface-border: #dce8f5;
+    --text-primary: #000050;
+    --text-secondary: #393973;
+    --accent: #FA5A50;
+    --accent-dark: #D94A41;
+    --accent-muted: rgba(250, 90, 80, 0.10);
+    --deep-red: #690037;
+    --navy-mid: #242459;
+    --blue-mid: #8CB3D9;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --page-w: 1000px;
+    --radius: 8px;
+  }
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: var(--page-w); margin: 0 auto; }
+
+  /* ════════ PAGE 1 ════════ */
+
+  /* ── Top Bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--surface-border);
+  }
+  .topbar-logo { height: 28px; }
+  .topbar-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* ── Hero Section ── */
+  .hero {
+    background: var(--accent);
+    color: #fff;
+    padding: 48px 40px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '&';
+    position: absolute;
+    right: -20px;
+    bottom: -40px;
+    font-family: var(--font-display);
+    font-size: 280px;
+    font-weight: 700;
+    opacity: 0.08;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    max-width: 700px;
+  }
+  .hero-sub {
+    font-size: 16px;
+    opacity: 0.9;
+    max-width: 600px;
+    line-height: 1.5;
+  }
+  .hero-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 14px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Main Content Grid ── */
+  .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  /* ── Challenge & Solution (left/right split) ── */
+  .block {
+    padding: 32px 40px;
+  }
+  .block-challenge {
+    border-right: 1px solid var(--surface-border);
+    border-bottom: 1px solid var(--surface-border);
+  }
+  .block-solution {
+    border-bottom: 1px solid var(--surface-border);
+  }
+  .block-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .block h2 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .block p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .tech-pill {
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--surface);
+    color: var(--navy-mid);
+    padding: 4px 10px;
+    border-radius: 12px;
+  }
+
+  /* ── Metrics Strip ── */
+  .metrics {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--surface-border);
+  }
+  .metric {
+    padding: 28px 32px;
+    text-align: center;
+    border-right: 1px solid var(--surface-border);
+  }
+  .metric:last-child { border-right: none; }
+  .metric-value {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* ── Quote ── */
+  .quote-section {
+    grid-column: 1 / -1;
+    padding: 32px 40px;
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--surface-border);
+    position: relative;
+  }
+  .quote-mark {
+    font-family: var(--font-display);
+    font-size: 64px;
+    color: var(--accent);
+    line-height: 1;
+    position: absolute;
+    top: 16px;
+    left: 32px;
+    opacity: 0.3;
+  }
+  .quote-text {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-primary);
+    line-height: 1.5;
+    max-width: 780px;
+    margin-left: 24px;
+  }
+  .quote-attr {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 12px;
+    margin-left: 24px;
+    font-style: normal;
+  }
+  .quote-attr strong {
+    color: var(--text-primary);
+  }
+
+  /* ── Deal Context Bar ── */
+  .context-bar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--text-primary);
+    color: rgba(255,255,255,0.85);
+  }
+  .context-item {
+    padding: 18px 20px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
+  }
+  .context-item:last-child { border-right: none; }
+  .context-item strong {
+    display: block;
+    font-size: 15px;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  /* ════════ PAGE 2 ════════ */
+  .page-break {
+    border-top: 4px solid var(--accent);
+    margin-top: 48px;
+    padding-top: 0;
+  }
+  .page2-header {
+    background: var(--surface-alt);
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--surface-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .page2-header h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .page2-header span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .page2-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  /* ── Approach Detail ── */
+  .approach {
+    padding: 32px 40px;
+    border-right: 1px solid var(--surface-border);
+    border-bottom: 1px solid var(--surface-border);
+  }
+  .approach h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .phase {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .phase-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .phase-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .phase-body p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+
+  /* ── Extended Metrics ── */
+  .ext-metrics {
+    padding: 32px 40px;
+    border-bottom: 1px solid var(--surface-border);
+  }
+  .ext-metrics h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .ext-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .ext-table th {
+    text-align: left;
+    font-weight: 600;
+    padding: 8px 12px;
+    background: var(--surface);
+    color: var(--navy-mid);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ext-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--surface-border);
+    color: var(--text-secondary);
+  }
+  .ext-table td:last-child {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* ── Tech Detail ── */
+  .tech-detail {
+    grid-column: 1 / -1;
+    padding: 32px 40px;
+    background: var(--surface-alt);
+  }
+  .tech-detail h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .tech-card {
+    background: var(--bg);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .tech-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .tech-card p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 20px 40px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--surface-border);
+  }
+
+  /* ════════ PRINT (Portrait A4: 210mm × 297mm) ════════ */
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    @page { size: A4 portrait; margin: 0; }
+
+    .page { max-width: none; width: 210mm; overflow: hidden; }
+
+    /* ── Page 1: natural height, no forced A4 ── */
+    .page1 {
+      width: 210mm;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar { padding: 10px 16px; flex-shrink: 0; }
+    .topbar-logo { height: 22px; }
+    .topbar-label { font-size: 10px; }
+
+    .hero { padding: 28px 20px 24px; flex-shrink: 0; }
+    .hero::after { font-size: 200px; right: -20px; bottom: -30px; }
+    .hero-eyebrow { font-size: 11px; margin-bottom: 8px; }
+    .hero h1 { font-size: 30px; margin-bottom: 8px; }
+    .hero-sub { font-size: 13px; line-height: 1.45; }
+    .hero-tags { margin-top: 12px; gap: 5px; }
+    .hero-tag { font-size: 10px; padding: 4px 10px; }
+
+    /* Content grid — natural height */
+    .content {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto auto;
+    }
+    .block-challenge { grid-column: 1; grid-row: 1; border-right: 1px solid var(--surface-border); }
+    .block-solution { grid-column: 2; grid-row: 1; }
+    .metrics { grid-column: 1 / -1; grid-row: 2; }
+    .quote-section { grid-column: 1 / -1; grid-row: 3; }
+    .context-bar { grid-column: 1 / -1; grid-row: 4; }
+
+    .block { padding: 16px 18px; }
+    .block-label { font-size: 10px; margin-bottom: 6px; }
+    .block h2 { font-size: 17px; margin-bottom: 8px; }
+    .block p { font-size: 12px; line-height: 1.55; }
+    .tech-list { margin-top: 10px; gap: 4px; }
+    .tech-pill { font-size: 10px; padding: 3px 8px; }
+
+    .metric { padding: 16px 14px; }
+    .metric-value { font-size: 34px; }
+    .metric-label { font-size: 11px; }
+
+    .quote-section { padding: 16px 20px; }
+    .quote-mark { font-size: 48px; top: 8px; left: 14px; }
+    .quote-text { font-size: 14px; line-height: 1.45; margin-left: 18px; }
+    .quote-attr { font-size: 11px; margin-top: 8px; margin-left: 18px; }
+
+    .context-item { padding: 12px 10px; font-size: 10px; }
+    .context-item strong { font-size: 13px; }
+
+    /* ── Page 2: header bar is the separator ── */
+    .page-break {
+      break-before: page;
+      page-break-before: always;
+      margin-top: 0;
+      border-top: none;
+      padding-top: 0;
+      width: 210mm;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page2-header { padding: 14px 18px; flex-shrink: 0; }
+    .page2-header h2 { font-size: 17px; }
+    .page2-header span { font-size: 9px; }
+
+    .page2-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+    }
+
+    .approach { padding: 16px 18px; }
+    .approach h3 { font-size: 13px; margin-bottom: 10px; }
+    .phase { margin-bottom: 10px; gap: 8px; }
+    .phase-num { width: 22px; height: 22px; font-size: 11px; }
+    .phase-body h4 { font-size: 11px; }
+    .phase-body p { font-size: 10px; line-height: 1.4; }
+
+    .ext-metrics { padding: 16px 18px; }
+    .ext-metrics h3 { font-size: 13px; margin-bottom: 10px; }
+    .ext-table th { font-size: 9px; padding: 5px 6px; }
+    .ext-table td { font-size: 10px; padding: 5px 6px; }
+
+    .tech-detail { padding: 16px 18px; }
+    .tech-detail h3 { font-size: 13px; margin-bottom: 10px; }
+    .tech-grid { gap: 8px; }
+    .tech-card { padding: 10px; }
+    .tech-card h4 { font-size: 11px; margin-bottom: 3px; }
+    .tech-card p { font-size: 9px; line-height: 1.35; }
+
+    .footer { padding: 8px 18px; font-size: 9px; flex-shrink: 0; }
+  }
+
+  /* ════════ RESPONSIVE ════════ */
+  @media (max-width: 700px) {
+    .content { grid-template-columns: 1fr; }
+    .block-challenge { border-right: none; }
+    .metrics { grid-template-columns: 1fr; }
+    .metric { border-right: none; border-bottom: 1px solid var(--surface-border); }
+    .context-bar { grid-template-columns: 1fr 1fr; }
+    .page2-content { grid-template-columns: 1fr; }
+    .approach { border-right: none; }
+    .tech-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .topbar, .hero, .block, .quote-section, .page2-header,
+    .approach, .ext-metrics, .tech-detail { padding-left: 24px; padding-right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ════════ PAGE 1 ════════ -->
+  <div class="page1">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <img class="topbar-logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyNi4wLjIsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMl8wMDAwMDA4NDUxOTUxMTIxMDU4NjU4MzQ0MDAwMDAwNTI1MzMyNTg5NDAxNzYxNTAzOF8iDQoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgNTEyIDE2NSINCgkgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDE2NTsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4NCgkuc3Qwe2ZpbGw6I0ZBNUE1MDt9DQo8L3N0eWxlPg0KPGcgaWQ9IkxheWVyXzEtMiI+DQoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTAsODIuOUMwLDMxLjQsMzYuNiwwLjQsODYuMywwLjRjNDAuMiwwLDcxLjgsMTkuOSw4MSw1OS4yaC0zOC41Yy00LjQtMjQuMS0xOC42LTQxLjQtNDEuOS00MS40DQoJCWMtMjguMywwLTQ1LjIsMjYuNi00NS4yLDU5LjdjMCwzNy43LDE4LjgsNjEuMyw1MS4xLDYxLjNjMjkuMSwwLDQ3LjktMTguOCw1My4yLTQ3LjloMjIuNGMtNi4zLDQ1LjItMzcuOSw3My43LTg0LjgsNzMuNw0KCQlDMzMuMSwxNjUsMCwxMzEuNSwwLDgyLjl6Ii8+DQoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE3Ni43LDE2MC44YzcuNS01LjksOS4yLTE1LjMsOS4yLTMxLjhWMzUuOGMwLTE3LTEuNy0yNi05LjItMzEuOFYzLjFoNThWNGMtNy41LDUuOS05LjIsMTQuOS05LjIsMzEuOFYxMjkNCgkJYzAsMTYuNSwxLjcsMjYsOS4yLDMxLjh2MC44aC01OFYxNjAuOHoiLz4NCgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzcyLjQsMy4xSDUxMnYyOS4zYy0yMy05LTM1LTEzLjItNDktMTMuMmgtMVYxMjljMCwxNi41LDEuNywyNiw5LjIsMzEuOHYwLjhoLTU3Ljh2LTAuOA0KCQljNy41LTUuOSw5LjItMTUuMyw5LjItMzEuOFYxOS4zaC0wLjhjLTE0LjIsMC0yNi4yLDQuMi00OS40LDEzLjJMMzcyLjQsMy4xTDM3Mi40LDMuMXoiLz4NCgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjQzLjEsMTE5LjJjMC0yMi4zLDE0LjctMzcuOCwzNy42LTQ2LjZjLTEwLjEtMTEuNS0xNi0yMS44LTE2LTM0LjRjMC0yMy45LDE5LjktMzguMiw0Ni0zOC4yDQoJCWMyOC42LDAsNDYuNiwxOC4zLDQ4LjksNDYuMmgtMjkuNGMtMC4yLTE3LjYtNi4zLTMxLjktMTkuOS0zMS45Yy05LjksMC0xNiw2LjUtMTYsMTYuOHM2LjEsMTkuNSwyMy41LDM3LjJsMzUuMywzNS41DQoJCWMyLjEtOS4yLDMuNC0xOS4zLDMuNi0yOS40bDMxLjUtMC4ydjVjLTYuOSwxMy42LTEzLjksMjYuOS0yMS40LDM4LjZsNDAuNSw0MC43djMuMmgtMzkuOWwtMTkuMy0xOS43DQoJCWMtMTMuNiwxMy45LTMwLjIsMjIuNy01Mi4xLDIyLjdDMjY1LDE2NC42LDI0My4xLDE0Ni45LDI0My4xLDExOS4yTDI0My4xLDExOS4yeiBNMzExLDE0My40YzEyLDAsMjEtNC4yLDI3LjktMTEuMWwtNDkuMy01MC4yDQoJCWMtOS4yLDYuNS0xMy43LDE2LjQtMTMuNywyNy4zQzI3NS45LDEyOS4xLDI4OS41LDE0My40LDMxMSwxNDMuNEwzMTEsMTQzLjR6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==" alt="CI&T">
+    <span class="topbar-label">Win Wire — Internal</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">Financial Services &middot; AWS</div>
+    <h1>NovaPay: Cloud-Native Transformation Unlocks 3x Transaction Throughput</h1>
+    <p class="hero-sub">CI&T partnered with NovaPay to migrate their legacy payment processing platform to AWS, delivering a modern microservices architecture that tripled capacity and cut infrastructure costs by 40%.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">Cloud Migration</span>
+      <span class="hero-tag">Microservices</span>
+      <span class="hero-tag">AWS</span>
+      <span class="hero-tag">FinTech</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Challenge -->
+    <div class="block block-challenge">
+      <div class="block-label">The Challenge</div>
+      <h2>A monolith blocking growth</h2>
+      <p>NovaPay's 12-year-old monolithic payment platform was hitting its ceiling. Peak transaction volumes caused frequent timeouts, compliance updates took months to deploy, and infrastructure costs were scaling linearly with every new market they entered. They needed a modern architecture that could handle 10x growth without 10x cost.</p>
+    </div>
+
+    <!-- Solution -->
+    <div class="block block-solution">
+      <div class="block-label">The Solution</div>
+      <h2>Event-driven microservices on AWS</h2>
+      <p>CI&T designed and built a cloud-native payment processing platform using event-driven microservices. The team decomposed the monolith into 23 bounded contexts, implemented CQRS for transaction processing, and built a zero-downtime deployment pipeline.</p>
+      <div class="tech-list">
+        <span class="tech-pill">Amazon EKS</span>
+        <span class="tech-pill">AWS Lambda</span>
+        <span class="tech-pill">DynamoDB</span>
+        <span class="tech-pill">EventBridge</span>
+        <span class="tech-pill">Step Functions</span>
+        <span class="tech-pill">CloudFront</span>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-value">$3.2M</div>
+        <div class="metric-label">Services Revenue</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">$280K</div>
+        <div class="metric-label">Incentive Funding (MAP 2.0)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">94 days</div>
+        <div class="metric-label">Deal Cycle</div>
+      </div>
+    </div>
+
+    <!-- Quote -->
+    <div class="quote-section">
+      <span class="quote-mark">&ldquo;</span>
+      <p class="quote-text">CI&T didn't just migrate our platform — they reimagined how we process payments. The new architecture has already paid for itself, and we're now expanding into three new markets we couldn't have touched before.</p>
+      <p class="quote-attr"><strong>Marcus Chen</strong>, CTO, NovaPay</p>
+    </div>
+
+    <!-- Deal Context Bar -->
+    <div class="context-bar">
+      <div class="context-item">
+        <strong>AWS MAP 2.0</strong>
+        Incentive Program
+      </div>
+      <div class="context-item">
+        <strong>$280K</strong>
+        Funding Received
+      </div>
+      <div class="context-item">
+        <strong>94 Days</strong>
+        Deal Cycle
+      </div>
+      <div class="context-item">
+        <strong>18 People</strong>
+        Delivery Team
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  </div><!-- /page1 -->
+
+  <!-- ════════ PAGE 2 ════════ -->
+
+  <div class="page-break">
+    <div class="page2-header">
+      <h2>Deep Dive: NovaPay Cloud Migration</h2>
+      <span>Page 2 — Details</span>
+    </div>
+
+    <div class="page2-content">
+
+      <!-- Approach -->
+      <div class="approach">
+        <h3>Project Approach</h3>
+        <div class="phase">
+          <div class="phase-num">1</div>
+          <div class="phase-body">
+            <h4>Discovery & Domain Mapping</h4>
+            <p>4 weeks of event storming sessions to decompose the monolith into bounded contexts and identify migration priorities.</p>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-num">2</div>
+          <div class="phase-body">
+            <h4>Foundation & Platform</h4>
+            <p>Built the EKS-based platform, CI/CD pipelines, and observability stack. Established the strangler fig pattern for incremental migration.</p>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-num">3</div>
+          <div class="phase-body">
+            <h4>Core Services Migration</h4>
+            <p>Migrated the 8 highest-value services first — payment processing, fraud detection, compliance, and settlement engines.</p>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-num">4</div>
+          <div class="phase-body">
+            <h4>Optimization & Handoff</h4>
+            <p>Performance tuning, chaos engineering, team training, and runbook development for NovaPay's internal platform team.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extended Metrics -->
+      <div class="ext-metrics">
+        <h3>Full Metrics</h3>
+        <table class="ext-table">
+          <thead>
+            <tr><th>Metric</th><th>Before</th><th>After</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Transaction throughput</td><td>1,200 TPS</td><td>3,800 TPS</td></tr>
+            <tr><td>Deployment frequency</td><td>Monthly</td><td>Daily</td></tr>
+            <tr><td>Infrastructure cost / txn</td><td>$0.012</td><td>$0.004</td></tr>
+            <tr><td>P99 latency</td><td>1,200ms</td><td>180ms</td></tr>
+            <tr><td>Compliance update lead time</td><td>6–8 weeks</td><td>3–5 days</td></tr>
+            <tr><td>Platform uptime</td><td>99.5%</td><td>99.99%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tech Detail -->
+      <div class="tech-detail">
+        <h3>Technology Architecture</h3>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <h4>Compute & Orchestration</h4>
+            <p>Amazon EKS with Karpenter for auto-scaling. Lambda for event-driven processing of async workflows like settlement and reconciliation.</p>
+          </div>
+          <div class="tech-card">
+            <h4>Data & Storage</h4>
+            <p>DynamoDB for transactional data with single-digit ms latency. S3 + Athena for analytics. ElastiCache for session and rate-limit state.</p>
+          </div>
+          <div class="tech-card">
+            <h4>Event Architecture</h4>
+            <p>EventBridge as the backbone, Step Functions for saga orchestration across payment flows. SQS for decoupled processing.</p>
+          </div>
+          <div class="tech-card">
+            <h4>Security & Compliance</h4>
+            <p>AWS KMS for encryption, Secrets Manager for credential rotation, GuardDuty + SecurityHub for continuous monitoring. PCI-DSS Level 1 compliant.</p>
+          </div>
+          <div class="tech-card">
+            <h4>Observability</h4>
+            <p>CloudWatch + X-Ray for distributed tracing. Custom dashboards for business-level metrics. Automated alerting with PagerDuty integration.</p>
+          </div>
+          <div class="tech-card">
+            <h4>CI/CD & DevOps</h4>
+            <p>GitOps with ArgoCD, progressive delivery with Flagger, infrastructure as code with Terraform. Automated canary deployments.</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page2-content -->
+
+    <div class="footer">
+      CI&T &middot; Confidential &middot; Win Wire — NovaPay Cloud Migration &middot; April 2026
+    </div>
+
+  </div><!-- /page-break -->
+
+</div><!-- /page -->
+
+</body>
+</html>
