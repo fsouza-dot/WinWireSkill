@@ -604,6 +604,23 @@ def build_page2_flexible(blocks, title, footer_text, tech_architecture=None, tec
             print(f"   Right column: {right_types}")
             print(f"   Suggestions: timeline, comparison, kpi, metrics, takeaway, highlights")
 
+    # Check for page density (too many blocks)
+    if len(left_blocks) > 2 or len(right_blocks) > 2:
+        print(f"⚠️  WARNING: Page 2 is too dense.")
+        print(f"   Left: {len(left_blocks)} blocks, Right: {len(right_blocks)} blocks")
+        print(f"   Recommended: MAX 2 blocks per column for a scannable layout.")
+
+    # Check for oversized blocks
+    for b in left_blocks + right_blocks:
+        items = b.get("items", [])
+        block_type = b.get("type", "unknown")
+        if block_type == "timeline" and len(items) > 4:
+            print(f"⚠️  WARNING: Timeline block has {len(items)} items (max recommended: 4)")
+        elif block_type == "comparison" and len(items) > 2:
+            print(f"⚠️  WARNING: Comparison block has {len(items)} items (max recommended: 2 for even grid)")
+        elif block_type == "highlights" and len(items) > 3:
+            print(f"⚠️  WARNING: Highlights block has {len(items)} items (max recommended: 3)")
+
     # Build HTML for each column
     left_html = "\n".join(build_content_block(b) for b in left_blocks) if left_blocks else ""
     right_html = "\n".join(build_content_block(b) for b in right_blocks) if right_blocks else ""
@@ -1297,10 +1314,15 @@ def build_css(version, partner_key=None):
     border-bottom: 1px solid var(--surface-border);
   }}
   .content-block {{
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }}
   .content-block:last-child {{
     margin-bottom: 0;
+  }}
+  /* Prevent oversized blocks from breaking layout */
+  .content-block-timeline .timeline-track {{
+    max-height: 320px;
+    overflow: hidden;
   }}
   .block-title {{
     font-size: 15px;

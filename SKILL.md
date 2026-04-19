@@ -379,13 +379,27 @@ to analyze these pools and select the best layout with visual variety.
    | `validations` | `proof-points` | `highlights` | <2 items |
    | `risks_managed` | `risks` | skip | <2 pairs |
 
-3. **Assign columns ensuring variety**:
+3. **Enforce content limits** — page 2 must be scannable in 30 seconds:
+
+   | Constraint | Limit |
+   |------------|-------|
+   | Blocks per column | MAX 2 |
+   | Timeline items | MAX 4 |
+   | Comparison items | MAX 2 (even grid) |
+   | Takeaway bullets | MAX 3, each ≤8 words |
+   | Highlights items | MAX 3 |
+   | Any item detail | ≤10 words |
+
+   If raw pools have more items than limits allow, **select the best ones, not all**.
+   A dense wall of text looks amateur. White space is professional.
+
+4. **Assign columns ensuring variety**:
 
    - **Left column priority:** `takeaway`, `timeline`, `roi`, `risks`
    - **Right column priority:** `kpi`, `comparison`, `metrics`, `proof-points`
    - **HARD RULE:** Never same primary block type on both sides
 
-4. **Present layout recommendation with alternatives** via `AskUserQuestion`:
+5. **Present layout recommendation with alternatives** via `AskUserQuestion`:
 
    ```
    📊 Recommended page 2 layout:
@@ -416,7 +430,7 @@ to analyze these pools and select the best layout with visual variety.
    - **Skip page 2** (one-pager only)
    ```
 
-5. **Apply user's choice** and proceed to Step 3 with the finalized blocks.
+6. **Apply user's choice** and proceed to Step 3 with the finalized blocks.
 
 ### Step 3: Refine the summary and present for approval
 

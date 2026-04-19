@@ -253,6 +253,25 @@ Include multiple items per pool ONLY if each item independently meets the qualit
 | `validations` | Third-party evidence, certifications | Compliance docs, reviews |
 | `risks_managed` | Specific risk + specific mitigation | Risk registers, retrospectives |
 
+**CRITICAL: Content limits — keep page 2 scannable in 30 seconds**
+
+Page 2 must NOT be a wall of text. Apply these hard limits:
+
+| Element | MAX items | Text limit |
+|---------|-----------|------------|
+| `executive_insights` | 1 insight | Headline ≤12 words, bullets ≤3, each ≤8 words |
+| `hero_metrics` | 2 metrics | Pick the 2 most impressive |
+| `metric_sets` | 4 metrics | Only concrete numbers |
+| `achievements` | 3 items | Detail ≤10 words each |
+| `transformations` | 2 items | Keep even grid (2 or 4) |
+| `project_phases` | 4 phases | Detail ≤10 words each |
+| `validations` | 4 items | Short phrases only |
+| `risks_managed` | 2 pairs | Mitigation ≤12 words |
+
+**If you have more content than the limits allow, SELECT THE BEST — don't include everything.**
+
+The main agent will build maximum 2 blocks per column. Your raw pools provide options, not a dump.
+
 **Technology Architecture (separate, fixed section):**
 - Always extract tech_architecture as a separate array
 - This renders as a fixed 3x2 card grid at the bottom of page 2
