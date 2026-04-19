@@ -246,7 +246,23 @@ Once the user provides the filled template and any supporting documents:
    python3 <SKILL_DIR>/scripts/ingest.py --template <path-to-xlsx> --output <WORKSPACE>/project-data.json
    ```
 
-2. **Spawn an extraction agent** to read all attached documents. Use Haiku for cost efficiency:
+2. **Discover all documents** in the workspace folder recursively. Use Glob to find supported files:
+
+   | Category | Extensions |
+   |----------|------------|
+   | Documents | `.pdf`, `.docx`, `.doc`, `.txt`, `.md`, `.rtf`, `.odt`, `.pages` |
+   | Presentations | `.pptx`, `.ppt`, `.odp`, `.key` |
+   | Spreadsheets | `.xlsx`, `.xls`, `.csv`, `.ods`, `.tsv`, `.numbers` |
+   | Images | `.png`, `.jpg`, `.jpeg`, `.svg`, `.gif`, `.webp`, `.tiff` |
+   | Web/Data | `.html`, `.htm`, `.xml`, `.json` |
+   | Email | `.eml`, `.msg` |
+
+   **Exclude:** `winwire-template.xlsx`, `winwire-*.html`, `winwire-*.pdf`, `project-data.json`,
+   and folders like `.git`, `node_modules`, `__pycache__`, `.venv`.
+
+   Tell the user what you found: "Found 12 documents across 4 folders. Reading them now..."
+
+3. **Spawn an extraction agent** to read all discovered documents. Use Haiku for cost efficiency:
 
    ```
    Agent({
@@ -260,18 +276,21 @@ Once the user provides the filled template and any supporting documents:
    with the most compelling content for storytelling. See `references/extraction-agent-prompt.md`
    for the full prompt template and output schema.
 
-3. **Merge results.** Template values (user input) always take priority over extracted values.
+4. **Merge results.** Template values (user input) always take priority over extracted values.
    Check the agent's `missing` array — if CRITICAL items are missing, ask the user directly.
 
 ### Step 2b: Docs-only flow (no template)
 
 If the user provided documents but no template, use "full extraction mode":
 
-1. **Spawn the extraction agent** with `full_extraction: true` in the prompt context. This
+1. **Discover all documents** in the workspace folder recursively (same file types as Step 2).
+   Tell the user what you found: "Found 8 documents. Reading them to extract WinWire content..."
+
+2. **Spawn the extraction agent** with `full_extraction: true` in the prompt context. This
    tells the agent to also extract project identity fields (client name, industry, partner,
    project type) that would normally come from the template.
 
-2. **Confirm inferred identity.** Present what the agent found:
+3. **Confirm inferred identity.** Present what the agent found:
    > "I found this in your docs:
    > - **Client:** [name]
    > - **Industry:** [industry]
@@ -282,7 +301,7 @@ If the user provided documents but no template, use "full extraction mode":
 
    Use `AskUserQuestion` with options: "Yes, correct" / "Fix something" / "Cancel"
 
-3. **Ask for deal metrics.** These are rarely in project docs — ask directly:
+4. **Ask for deal metrics.** These are rarely in project docs — ask directly:
    > "I need a few numbers that aren't typically in project docs:
    > 1. **Services Revenue** — total CI&T contract value (e.g., $3.2M)
    > 2. **Annual Cloud Revenue (ACR)** — recurring cloud spend (e.g., $1.2M)
@@ -291,7 +310,7 @@ If the user provided documents but no template, use "full extraction mode":
    >
    > Please provide these, or type 'skip' for any you don't have."
 
-4. **Create the data structure.** Combine agent-extracted content with user-provided metrics,
+5. **Create the data structure.** Combine agent-extracted content with user-provided metrics,
    then proceed to Step 3 (refine and present for approval).
 
 ### Step 3: Refine the summary and present for approval
