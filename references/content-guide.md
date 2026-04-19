@@ -112,15 +112,6 @@ The build_html.py script expects a JSON file with this structure. All fields mar
         ]
       },
 
-      // LIST — Technologies, deliverables, phases
-      {
-        "type": "list",
-        "title": "Technologies Deployed",
-        "column": "full",
-        "style": "bullet",  // or "numbered"
-        "items": ["Amazon EKS", "Lambda", "DynamoDB", "EventBridge", "CloudWatch", "ArgoCD"]
-      },
-
       // NARRATIVE — Prose paragraph for context
       {
         "type": "narrative",
@@ -132,11 +123,20 @@ The build_html.py script expects a JSON file with this structure. All fields mar
       // QUOTE — Additional testimonials (if not on page 1)
       {
         "type": "quote",
-        "column": "full",
         "text": "The CI&T team's deep AWS expertise made all the difference.",
         "author": "Sarah Johnson",
         "author_title": "VP Engineering, NovaPay"
       }
+    ],
+
+    // TECHNOLOGY ARCHITECTURE — Fixed 3x2 card grid at bottom (not customizable)
+    "tech_architecture": [
+      {"category": "Compute & Orchestration", "description": "Amazon EKS with Karpenter for auto-scaling..."},
+      {"category": "Data & Storage", "description": "DynamoDB for transactional data..."},
+      {"category": "Event Architecture", "description": "EventBridge as the backbone..."},
+      {"category": "Security & Compliance", "description": "AWS KMS for encryption..."},
+      {"category": "Observability", "description": "CloudWatch + X-Ray for distributed tracing..."},
+      {"category": "CI/CD & DevOps", "description": "GitOps with ArgoCD..."}
     ]
   },
 

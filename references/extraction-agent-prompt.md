@@ -86,14 +86,13 @@ from docs, including project identity. Look for:
 Page 2 uses a flexible block system. Extract whatever compelling content you find and return
 it as blocks. Don't force content into rigid categories — if it doesn't exist, skip it.
 
-**Block types available:**
+**Block types available (for left/right columns only):**
 
 | Type | When to Use | What to Extract |
 |------|-------------|-----------------|
 | `metrics` | Quantitative wins (numbers that impress) | Value + label pairs |
 | `highlights` | Key achievements, challenges solved | Headline + detail pairs |
 | `comparison` | Before/after improvements | Label + before + after |
-| `list` | Technologies, deliverables, phases | Simple string list |
 | `narrative` | Methodology, approach context | Prose paragraph |
 | `quote` | Additional testimonials | Text + author + title |
 
@@ -105,9 +104,13 @@ it as blocks. Don't force content into rigid categories — if it doesn't exist,
 
 **Column hints:**
 - `"column": "left"` — appears in left column
-- `"column": "right"` — appears in right column  
-- `"column": "full"` — spans full width (good for tech lists)
+- `"column": "right"` — appears in right column
 - Omit column to let the system distribute evenly
+
+**Technology Architecture (separate, fixed section):**
+- Always extract tech_architecture as a separate array (not in blocks)
+- This renders as a fixed 3x2 card grid at the bottom of page 2
+- Group by: Compute, Data, Events, Security, Observability, CI/CD
 
 ## Output format
 
@@ -171,13 +174,15 @@ Return valid JSON only — no markdown, no explanation:
           {"label": "Deployment", "before": "Monthly", "after": "Daily"},
           {"label": "Latency", "before": "1200ms", "after": "180ms"}
         ]
-      },
-      {
-        "type": "list",
-        "title": "Technologies",
-        "column": "full",
-        "items": ["EKS", "Lambda", "DynamoDB", "EventBridge"]
       }
+    ],
+    "tech_architecture": [
+      {"category": "Compute", "description": "Amazon EKS with Karpenter auto-scaling"},
+      {"category": "Data", "description": "DynamoDB for transactions, S3 for analytics"},
+      {"category": "Events", "description": "EventBridge for async messaging"},
+      {"category": "Security", "description": "KMS encryption, IAM roles, VPC isolation"},
+      {"category": "Observability", "description": "CloudWatch, X-Ray distributed tracing"},
+      {"category": "CI/CD", "description": "GitOps with ArgoCD, GitHub Actions"}
     ]
   },
   "missing": ["List any CRITICAL items you could not find"]

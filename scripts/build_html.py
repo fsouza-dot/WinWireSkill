@@ -350,27 +350,6 @@ def build_content_block(block, accent_color="var(--accent)"):
         <p>{h(text)}</p>
       </div>"""
 
-    elif block_type == "list":
-        # Pills (default) or bulleted/numbered list
-        list_style = block.get("style", "pills")  # pills, bullet, or numbered
-        if list_style == "pills":
-            items_html = "\n".join(f"          <li>{h(item)}</li>" for item in items)
-            return f"""      <div class="content-block content-block-list">
-        {title_html}
-        <ul class="block-pills">
-{items_html}
-        </ul>
-      </div>"""
-        else:
-            tag = "ol" if list_style == "numbered" else "ul"
-            items_html = "\n".join(f"          <li>{h(item)}</li>" for item in items)
-            return f"""      <div class="content-block content-block-list">
-        {title_html}
-        <{tag} class="block-list">
-{items_html}
-        </{tag}>
-      </div>"""
-
     elif block_type == "quote":
         # Testimonial block
         text = block.get("text", "")
@@ -407,17 +386,20 @@ def build_content_block(block, accent_color="var(--accent)"):
         return build_content_block({**block, "type": "highlights"}, accent_color)
 
 
-def build_page2_flexible(blocks, title, footer_text):
-    """Build flexible page 2 from content blocks."""
-    if not blocks:
+def build_page2_flexible(blocks, title, footer_text, tech_architecture=None, tech_title="Technology Architecture"):
+    """Build flexible page 2 from content blocks.
+
+    Left and right columns are flexible (content blocks).
+    Tech architecture at bottom is fixed (always 3x2 card grid).
+    """
+    if not blocks and not tech_architecture:
         return ""
 
-    # Separate blocks by column
+    # Separate blocks by column (only left and right - no full width blocks)
     left_blocks = [b for b in blocks if b.get("column") == "left"]
     right_blocks = [b for b in blocks if b.get("column") == "right"]
-    full_blocks = [b for b in blocks if b.get("column") == "full"]
     # Unspecified blocks: distribute evenly
-    unspecified = [b for b in blocks if b.get("column") not in ("left", "right", "full")]
+    unspecified = [b for b in blocks if b.get("column") not in ("left", "right")]
     for i, b in enumerate(unspecified):
         if i % 2 == 0:
             left_blocks.append(b)
@@ -427,7 +409,6 @@ def build_page2_flexible(blocks, title, footer_text):
     # Build HTML for each column
     left_html = "\n".join(build_content_block(b) for b in left_blocks) if left_blocks else ""
     right_html = "\n".join(build_content_block(b) for b in right_blocks) if right_blocks else ""
-    full_html = "\n".join(build_content_block(b) for b in full_blocks) if full_blocks else ""
 
     # Determine layout class
     if left_blocks and right_blocks:
@@ -447,10 +428,17 @@ def build_page2_flexible(blocks, title, footer_text):
 {right_html}
       </div>"""
 
-    full_section = f"""
-      <div class="page2-flex-full">
-{full_html}
-      </div>""" if full_html else ""
+    # Tech architecture section (fixed 3x2 grid - not customizable)
+    tech_section = ""
+    if tech_architecture:
+        tech_cards = build_tech_cards(tech_architecture)
+        tech_section = f"""
+      <div class="tech-detail">
+        <h3>{h(tech_title)}</h3>
+        <div class="tech-grid">
+{tech_cards}
+        </div>
+      </div>"""
 
     return f"""
   <div class="page-break">
@@ -462,7 +450,7 @@ def build_page2_flexible(blocks, title, footer_text):
     <div class="page2-flex {layout_class}">
 {columns_html}
     </div>
-{full_section}
+{tech_section}
     <div class="footer">
       {footer_text}
     </div>
@@ -1696,9 +1684,17 @@ def build_page2(version, partner_key, data):
     if page2.get("blocks"):
         if is_partner:
             title = f"Deep Dive: {theme['page2_title_suffix']}"
+            tech_title = theme["tech_title"]
         else:
             title = page2.get("title", f"Deep Dive: {h(page2.get('deep_dive_title', ''))}")
-        return build_page2_flexible(page2["blocks"], title, footer_text)
+            tech_title = "Technology Architecture"
+        return build_page2_flexible(
+            page2["blocks"],
+            title,
+            footer_text,
+            tech_architecture=page2.get("tech_architecture"),
+            tech_title=tech_title
+        )
 
     # Legacy format — render with old structure
     if is_partner:
