@@ -311,7 +311,76 @@ If the user provided documents but no template, use "full extraction mode":
    > Please provide these, or type 'skip' for any you don't have."
 
 5. **Create the data structure.** Combine agent-extracted content with user-provided metrics,
-   then proceed to Step 3 (refine and present for approval).
+   then proceed to Step 2c (analyze raw pools for page 2 layout).
+
+### Step 2c: Analyze raw content pools and select page 2 layout
+
+The extraction agent returns raw content pools in `page2.raw`, not final blocks. Your job is
+to analyze these pools and select the best layout with visual variety.
+
+1. **Score each pool** for content quality:
+
+   | Quality signal | Score boost | Good for |
+   |----------------|-------------|----------|
+   | Has concrete numbers | +2 | `kpi`, `metrics`, `comparison` |
+   | Has before/after data | +2 | `comparison` |
+   | Has dates/phases | +1 | `timeline` |
+   | Has executive insight | +2 | `takeaway` |
+   | Multiple items (3+) | +1 | more options |
+   | Empty or single weak item | skip | — |
+
+2. **Select block types** from strongest pools:
+
+   | Pool | Best as | Fallback | Skip if |
+   |------|---------|----------|---------|
+   | `executive_insights` | `takeaway` | — | empty |
+   | `hero_metrics` | `kpi` | `metrics` | no trend/context |
+   | `metric_sets` | `metrics` | `highlights` | <2 items |
+   | `achievements` | `highlights` | `proof-points` | empty |
+   | `transformations` | `comparison` | `metrics` | no before/after |
+   | `project_phases` | `timeline` | `highlights` | <3 phases |
+   | `financial_analysis` | `roi` | skip | incomplete |
+   | `validations` | `proof-points` | `highlights` | <2 items |
+   | `risks_managed` | `risks` | skip | <2 pairs |
+
+3. **Assign columns ensuring variety**:
+
+   - **Left column priority:** `takeaway`, `timeline`, `roi`, `risks`
+   - **Right column priority:** `kpi`, `comparison`, `metrics`, `proof-points`
+   - **HARD RULE:** Never same primary block type on both sides
+
+4. **Present layout recommendation with alternatives** via `AskUserQuestion`:
+
+   ```
+   📊 Recommended page 2 layout:
+   
+   LEFT COLUMN:
+   ├─ takeaway: "AI cuts discovery from months to weeks"
+   │   • 60% context pre-captured
+   │   • 4 parallel tracks
+   │   • 9 OpCos unified
+   └─ timeline: 4 project phases
+       Discovery → Feature Gap → Migration Pilot → Augmentation
+   
+   RIGHT COLUMN:
+   ├─ kpi: "60%" SME Context Pre-Captured (↓40% interview load)
+   └─ comparison: 2 transformations
+       Discovery: Months → 6-8 weeks (↓75%)
+       SME Load: 12 sessions → 4-5 (↓60%)
+   
+   📦 Available alternatives (content found but not used):
+   • highlights: 2 achievements with impact badges
+   • proof-points: 3 validations
+   • risks: 2 risk/mitigation pairs
+   
+   Options:
+   - **Use recommended layout** ✓
+   - **Swap a block** (tell me which)
+   - **Add more blocks** (pick from alternatives)
+   - **Skip page 2** (one-pager only)
+   ```
+
+5. **Apply user's choice** and proceed to Step 3 with the finalized blocks.
 
 ### Step 3: Refine the summary and present for approval
 

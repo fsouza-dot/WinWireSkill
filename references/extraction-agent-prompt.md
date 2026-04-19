@@ -149,53 +149,50 @@ whatever compelling content you find. Prioritize content that helps sales teams 
    - Extract: Risk + how it was mitigated
    - Example: {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"}
 
-**Selection logic:**
-- **ALWAYS include a `takeaway`** — this is the "so what" that executives scan for
-- Prioritize blocks with HARD NUMBERS — sales teams need concrete proof points
-- 3-5 blocks is ideal; quality over quantity
-- If nothing compelling, return empty blocks array (page 2 will be skipped)
+**CRITICAL: Extract ALL content into raw pools**
 
-**CRITICAL: Column variety rule**
+Do NOT select block types or assign columns. Your job is to extract ALL compelling content
+into categorized pools. The main agent will analyze these pools and select the best layout.
 
-Left and right columns MUST use different primary block types. Same type on both sides = amateur document. Variety = professional.
+Extract EVERYTHING you find for each category — multiple items per pool is good. This gives
+the main agent options to choose from and ensures visual variety in the final document.
 
-```
-❌ BAD:   left=highlights, right=highlights    ← monotonous, unprofessional
-❌ BAD:   left=metrics, right=metrics          ← no visual contrast
-✓ GOOD:  left=takeaway+timeline, right=kpi+comparison
-✓ GOOD:  left=takeaway+metrics, right=highlights+proof-points
-```
+**Raw content pools to populate:**
 
-**Block selection decision tree** — match content to block type:
+| Pool | What to extract | Where to find it |
+|------|-----------------|------------------|
+| `executive_insights` | Bold headline statements + supporting bullets | Executive summaries, conclusions, "key findings" |
+| `hero_metrics` | Single impressive numbers with trend + context | KPI dashboards, headline metrics, "bottom line" |
+| `metric_sets` | Multiple quantitative results | Performance reports, SLAs, results sections |
+| `achievements` | Accomplishments with details + optional impact | Milestones, deliverables, "key wins" |
+| `transformations` | Before → after improvements | Results tables, "improvements", comparisons |
+| `project_phases` | Sequential steps with dates/phases | Project plans, phase summaries, timelines |
+| `financial_analysis` | Investment, returns, ROI | Business cases, cost-benefit analyses |
+| `validations` | Certifications, awards, evidence | Compliance docs, third-party reviews |
+| `risks_managed` | Risk + mitigation pairs | Risk registers, lessons learned, retrospectives |
 
-| Content has...                    | Use block type   |
-|-----------------------------------|------------------|
-| Sequential phases/steps           | `timeline`       |
-| Before/after improvements         | `comparison`     |
-| One impressive hero number        | `kpi`            |
-| Multiple metrics with values      | `metrics`        |
-| Executive summary / "so what"     | `takeaway`       |
-| Achievements with outcomes        | `highlights`     |
-| Certifications / validations      | `proof-points`   |
-| Risk + mitigation pairs           | `risks`          |
-| Investment → returns breakdown    | `roi`            |
+**Extraction guidance:**
 
-**Recommended pairings for common content:**
+- **executive_insights**: Find the "so what" — the one-liner an executive would quote. Include 2-4 supporting bullets. Extract ALL insights you find, not just one.
 
-| Left column content | Right column content | Left types | Right types |
-|---------------------|----------------------|------------|-------------|
-| Project phases      | Business outcomes    | `takeaway` + `timeline` | `kpi` + `comparison` |
-| Discovery findings  | Results achieved     | `takeaway` + `highlights` | `metrics` + `proof-points` |
-| Approach + risks    | Impact + validation  | `takeaway` + `risks` | `kpi` + `proof-points` |
+- **hero_metrics**: Look for the most impressive single numbers. Include trend (↑217%) and context (vs. baseline). Extract ALL impressive metrics — the main agent will pick the best.
 
-**Column hints:**
-- `"column": "left"` — appears in left column
-- `"column": "right"` — appears in right column
-- Omit column to let the system distribute evenly
-- Put `takeaway` or `kpi` in the left column (first thing seen)
+- **metric_sets**: Any quantitative results. Include delta and context where available. Extract ALL metrics found.
+
+- **achievements**: What was delivered? What was accomplished? Include impact where mentioned ($2.1M saved). Extract ALL achievements.
+
+- **transformations**: Any before/after comparison. Include % change and timeframe. Extract ALL transformations found.
+
+- **project_phases**: Sequential phases, milestones, sprints, quarters. Include dates and outcomes. Extract the FULL journey.
+
+- **financial_analysis**: Investment amount, returns breakdown, ROI percentage. Partial data is OK — extract what exists.
+
+- **validations**: Certifications, compliance, awards, third-party validations, client NPS. Extract ALL evidence of quality.
+
+- **risks_managed**: Problems anticipated and how they were handled. Shows professionalism. Extract ALL risk/mitigation pairs.
 
 **Technology Architecture (separate, fixed section):**
-- Always extract tech_architecture as a separate array (not in blocks)
+- Always extract tech_architecture as a separate array
 - This renders as a fixed 3x2 card grid at the bottom of page 2
 - Group by: Compute, Data, Events, Security, Observability, CI/CD
 
@@ -234,76 +231,52 @@ Return valid JSON only — no markdown, no explanation:
   "page2": {
     "include": true,
     "title": "Deep Dive: [Client] [Project Type]",
-    "blocks": [
-      // TAKEAWAY — Executive summary (always include if possible)
-      {
-        "type": "takeaway",
-        "column": "left",
-        "headline": "Migration delivered 3x ROI in first year while reducing risk",
-        "bullets": ["$3.2M annual savings", "Zero security incidents", "40% faster deployments"]
-      },
 
-      // KPI — Single hero metric
-      {
-        "type": "kpi",
-        "column": "right",
-        "value": "3,800",
-        "label": "Transactions/Second",
-        "trend": "↑ 217%",
-        "context": "vs. 1,200 TPS before migration"
-      },
+    // RAW CONTENT POOLS — extract ALL content, let main agent select layout
+    "raw": {
+      "executive_insights": [
+        // Extract ALL "so what" statements found
+        {
+          "headline": "Migration delivered 3x ROI in first year",
+          "bullets": ["$3.2M annual savings", "Zero security incidents", "40% faster deployments"]
+        }
+      ],
 
-      // METRICS — Multiple numbers with optional delta/context
-      {
-        "type": "metrics",
-        "title": "Business Impact",
-        "column": "left",
-        "items": [
-          {"value": "99.99%", "label": "Uptime", "delta": "↑0.49%", "context": "from 99.5%"},
-          {"value": "40%", "label": "Cost Reduction"}
-        ]
-      },
+      "hero_metrics": [
+        // Extract ALL impressive single numbers
+        {"value": "3,800", "label": "Transactions/Second", "trend": "↑217%", "context": "vs 1,200 before"},
+        {"value": "99.99%", "label": "Uptime", "trend": "↑0.49%", "context": "from 99.5%"}
+      ],
 
-      // HIGHLIGHTS — Achievements with optional impact badge
-      {
-        "type": "highlights",
-        "title": "Key Achievements",
-        "column": "right",
-        "items": [
-          {"headline": "Zero-Downtime Migration", "detail": "2TB database moved live", "impact": "$0 revenue loss"},
-          {"headline": "PCI Compliant", "detail": "Certified in 3 weeks vs typical 3 months"}
-        ]
-      },
+      "metric_sets": [
+        // Extract ALL quantitative results
+        {"value": "40%", "label": "Cost Reduction", "context": "infrastructure spend"},
+        {"value": "6", "label": "AWS Services", "context": "core services adopted"},
+        {"value": "$1.2M", "label": "Annual Cloud Revenue"}
+      ],
 
-      // COMPARISON — Before/after with change % and timeframe
-      {
-        "type": "comparison",
-        "title": "Transformation",
-        "column": "left",
-        "items": [
-          {"label": "Deployment", "before": "Monthly", "after": "Daily", "change": "30x faster"},
-          {"label": "Latency", "before": "1200ms", "after": "180ms", "change": "↓85%", "timeframe": "achieved Q3"}
-        ]
-      },
+      "achievements": [
+        // Extract ALL accomplishments with impact
+        {"headline": "Zero-Downtime Migration", "detail": "2TB database moved live", "impact": "$0 revenue loss"},
+        {"headline": "PCI Compliant", "detail": "Certified in 3 weeks vs typical 3 months"}
+      ],
 
-      // TIMELINE — Project journey
-      {
-        "type": "timeline",
-        "title": "Project Journey",
-        "column": "right",
-        "items": [
-          {"date": "Q1", "title": "Discovery", "detail": "Mapped 47 services"},
-          {"date": "Q2", "title": "Platform Build", "detail": "EKS foundation live"},
-          {"date": "Q3", "title": "Migration", "detail": "12 services moved"},
-          {"date": "Q4", "title": "Optimization", "detail": "40% cost reduction"}
-        ]
-      },
+      "transformations": [
+        // Extract ALL before/after comparisons
+        {"label": "Deployment", "before": "Monthly", "after": "Daily", "change": "30x faster"},
+        {"label": "P99 Latency", "before": "1200ms", "after": "180ms", "change": "↓85%", "timeframe": "achieved Q3"}
+      ],
 
-      // ROI — Financial breakdown
-      {
-        "type": "roi",
-        "title": "Return on Investment",
-        "column": "left",
+      "project_phases": [
+        // Extract FULL project journey
+        {"date": "Q1", "title": "Discovery", "detail": "Mapped 47 services"},
+        {"date": "Q2", "title": "Platform Build", "detail": "EKS foundation live"},
+        {"date": "Q3", "title": "Migration", "detail": "12 services moved"},
+        {"date": "Q4", "title": "Optimization", "detail": "40% cost reduction achieved"}
+      ],
+
+      "financial_analysis": {
+        // Extract ROI data (partial OK)
         "investment": "$1.8M",
         "investment_label": "Total Investment",
         "returns": [
@@ -313,25 +286,21 @@ Return valid JSON only — no markdown, no explanation:
         "total_roi": "122%"
       },
 
-      // PROOF-POINTS — Evidence list
-      {
-        "type": "proof-points",
-        "title": "Validated Results",
-        "column": "right",
-        "items": ["SOC 2 Type II certified", "AWS Well-Architected reviewed", "Zero P1 incidents in 6 months"]
-      },
+      "validations": [
+        // Extract ALL evidence of quality
+        "SOC 2 Type II certified",
+        "AWS Well-Architected reviewed",
+        "Zero P1 incidents in 6 months",
+        "Client NPS: 72"
+      ],
 
-      // RISKS — Risk management
-      {
-        "type": "risks",
-        "title": "Risks Managed",
-        "column": "left",
-        "items": [
-          {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"},
-          {"risk": "Performance degradation", "mitigation": "Load tested to 5x peak before cutover"}
-        ]
-      }
-    ],
+      "risks_managed": [
+        // Extract ALL risk/mitigation pairs
+        {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"},
+        {"risk": "Performance degradation", "mitigation": "Load tested to 5x peak before cutover"}
+      ]
+    },
+
     "tech_architecture": [
       {"category": "Compute", "description": "Amazon EKS with Karpenter auto-scaling"},
       {"category": "Data", "description": "DynamoDB for transactions, S3 for analytics"},
@@ -353,3 +322,56 @@ After the agent returns:
 2. **Check `missing` array** — if CRITICAL items missing, ask user directly
 3. **Review narratives** — the agent drafts headlines/body; you refine for WinWire tone
 4. **Fill gaps** — use extracted data to enhance user's challenge/solution highlights
+
+### Processing page2.raw pools → final blocks
+
+The agent returns raw content pools in `page2.raw`. You must:
+
+1. **Score each pool** for content quality:
+   - Has concrete numbers? → strong candidate for `kpi`, `metrics`, `comparison`
+   - Has before/after? → strong candidate for `comparison`
+   - Has dates/phases? → strong candidate for `timeline`
+   - Has executive summary? → strong candidate for `takeaway`
+   - Multiple items? → more options to choose from
+   - Empty or weak? → skip this pool
+
+2. **Select block types** based on strongest content:
+
+   | Pool | Best block type | Fallback |
+   |------|-----------------|----------|
+   | executive_insights | `takeaway` | — (always use if present) |
+   | hero_metrics | `kpi` | `metrics` |
+   | metric_sets | `metrics` | `highlights` |
+   | achievements | `highlights` | `proof-points` |
+   | transformations | `comparison` | `metrics` |
+   | project_phases | `timeline` | `highlights` |
+   | financial_analysis | `roi` | skip if incomplete |
+   | validations | `proof-points` | `highlights` |
+   | risks_managed | `risks` | skip if <2 items |
+
+3. **Assign columns with variety**:
+   - Left column: prioritize `takeaway`, `timeline`, `roi`, `risks`
+   - Right column: prioritize `kpi`, `comparison`, `metrics`, `proof-points`
+   - **NEVER same primary block type on both sides**
+
+4. **Present layout options to user** before building:
+   ```
+   Recommended page 2 layout:
+   
+   LEFT COLUMN:
+   ├─ takeaway: "[headline]" + 3 bullets
+   └─ timeline: [N] project phases
+   
+   RIGHT COLUMN:
+   ├─ kpi: "[value]" [label] ([trend])
+   └─ comparison: [N] before/after items
+   
+   Available alternatives:
+   • Could swap timeline → highlights ([N] achievements available)
+   • Could add proof-points: [N] validations found
+   • risks block available: [N] risk/mitigation pairs
+   
+   Use recommended layout, or customize?
+   ```
+
+5. **Build final blocks array** only after user approves layout

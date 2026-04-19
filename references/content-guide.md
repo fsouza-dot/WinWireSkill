@@ -68,11 +68,60 @@ The build_html.py script expects a JSON file with this structure. All fields mar
   ],
 
   // ═══════════════════════════════════════════════════════════════════════
-  // PAGE 2 — FLEXIBLE BLOCKS FORMAT (McKinsey-level presentation standards)
+  // PAGE 2 — RAW CONTENT POOLS (returned by extraction agent)
   // ═══════════════════════════════════════════════════════════════════════
-  // Page 2 uses content blocks that adapt to whatever compelling content exists.
+  // The extraction agent returns raw content pools. The main agent analyzes
+  // these and selects the best layout with visual variety between columns.
+  //
+  // Pool → Block type mapping:
+  //   executive_insights → takeaway
+  //   hero_metrics       → kpi
+  //   metric_sets        → metrics
+  //   achievements       → highlights
+  //   transformations    → comparison
+  //   project_phases     → timeline
+  //   financial_analysis → roi
+  //   validations        → proof-points
+  //   risks_managed      → risks
+
+  "page2_raw_example": {
+    "executive_insights": [
+      {"headline": "Migration delivered 3x ROI", "bullets": ["$3.2M savings", "Zero incidents", "40% faster"]}
+    ],
+    "hero_metrics": [
+      {"value": "3,800", "label": "TPS", "trend": "↑217%", "context": "vs 1,200 before"}
+    ],
+    "metric_sets": [
+      {"value": "99.99%", "label": "Uptime", "delta": "↑0.49%"},
+      {"value": "40%", "label": "Cost Reduction"}
+    ],
+    "achievements": [
+      {"headline": "Zero-Downtime Migration", "detail": "2TB moved live", "impact": "$0 loss"}
+    ],
+    "transformations": [
+      {"label": "Latency", "before": "1200ms", "after": "180ms", "change": "↓85%"}
+    ],
+    "project_phases": [
+      {"date": "Q1", "title": "Discovery", "detail": "Mapped 47 services"}
+    ],
+    "financial_analysis": {
+      "investment": "$1.8M",
+      "returns": [{"label": "Annual Savings", "value": "$3.2M"}],
+      "total_roi": "122%"
+    },
+    "validations": ["SOC 2 certified", "AWS Well-Architected reviewed"],
+    "risks_managed": [
+      {"risk": "Data loss", "mitigation": "Blue-green deployment with rollback"}
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // PAGE 2 — FINAL BLOCKS FORMAT (after main agent selects layout)
+  // ═══════════════════════════════════════════════════════════════════════
+  // After analyzing raw pools, the main agent builds this blocks array.
   // ALWAYS include a "takeaway" block (the executive "so what").
   // Prioritize blocks with hard numbers. 3-5 blocks is ideal.
+  // NEVER use the same primary block type in both columns.
 
   "page2": {
     "include": true,
