@@ -315,12 +315,12 @@ def build_content_block(block, accent_color="var(--accent)"):
     title_html = f'<h3 class="block-title">{h(title)}</h3>' if title else ""
 
     if block_type == "metrics":
-        # Big numbers grid
+        # Big numbers grid — label above value like outcome-cards
         items_html = []
         for item in items:
             items_html.append(f"""        <div class="block-metric">
-          <div class="block-metric-value">{h(item.get("value", ""))}</div>
           <div class="block-metric-label">{h(item.get("label", ""))}</div>
+          <div class="block-metric-value">{h(item.get("value", ""))}</div>
         </div>""")
         return f"""      <div class="content-block content-block-metrics">
         {title_html}
@@ -351,11 +351,20 @@ def build_content_block(block, accent_color="var(--accent)"):
       </div>"""
 
     elif block_type == "list":
-        # Bulleted or numbered list
-        list_style = block.get("style", "bullet")  # bullet or numbered
-        tag = "ol" if list_style == "numbered" else "ul"
-        items_html = "\n".join(f"          <li>{h(item)}</li>" for item in items)
-        return f"""      <div class="content-block content-block-list">
+        # Pills (default) or bulleted/numbered list
+        list_style = block.get("style", "pills")  # pills, bullet, or numbered
+        if list_style == "pills":
+            items_html = "\n".join(f"          <li>{h(item)}</li>" for item in items)
+            return f"""      <div class="content-block content-block-list">
+        {title_html}
+        <ul class="block-pills">
+{items_html}
+        </ul>
+      </div>"""
+        else:
+            tag = "ol" if list_style == "numbered" else "ul"
+            items_html = "\n".join(f"          <li>{h(item)}</li>" for item in items)
+            return f"""      <div class="content-block content-block-list">
         {title_html}
         <{tag} class="block-list">
 {items_html}
@@ -375,20 +384,22 @@ def build_content_block(block, accent_color="var(--accent)"):
       </div>"""
 
     elif block_type == "comparison":
-        # Before → After pairs
+        # Before → After pairs in card grid
         items_html = []
         for item in items:
-            items_html.append(f"""        <div class="block-comparison">
-          <div class="comparison-label">{h(item.get("label", ""))}</div>
-          <div class="comparison-values">
-            <span class="comparison-before">{h(item.get("before", ""))}</span>
-            <span class="comparison-arrow">→</span>
-            <span class="comparison-after">{h(item.get("after", ""))}</span>
-          </div>
-        </div>""")
+            items_html.append(f"""          <div class="block-comparison">
+            <div class="comparison-label">{h(item.get("label", ""))}</div>
+            <div class="comparison-values">
+              <span class="comparison-before">{h(item.get("before", ""))}</span>
+              <span class="comparison-arrow">→</span>
+              <span class="comparison-after">{h(item.get("after", ""))}</span>
+            </div>
+          </div>""")
         return f"""      <div class="content-block content-block-comparison">
         {title_html}
+        <div class="block-comparisons">
 {chr(10).join(items_html)}
+        </div>
       </div>"""
 
     else:
@@ -1089,149 +1100,217 @@ def build_css(version, partner_key=None):
     grid-template-columns: 1fr;
   }}
   .page2-flex-col {{
-    padding: 24px 32px;
+    padding: 28px 36px;
     border-bottom: 1px solid var(--surface-border);
   }}
   .page2-flex-left {{
     border-right: 1px solid var(--surface-border);
   }}
   .page2-flex-full {{
-    padding: 24px 32px;
+    padding: 28px 36px;
     border-bottom: 1px solid var(--surface-border);
   }}
   .content-block {{
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }}
   .content-block:last-child {{
     margin-bottom: 0;
   }}
   .block-title {{
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid {metric_color};
+    display: inline-block;
   }}
-  /* Metrics block */
+
+  /* Metrics block — matches outcome-card style */
   .block-metrics-grid {{
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }}
   .block-metric {{
-    text-align: center;
-    padding: 16px 12px;
-    background: var(--surface-alt);
-    border-radius: var(--radius);
-  }}
-  .block-metric-value {{
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 700;
-    color: {metric_color};
-    line-height: 1.1;
-  }}
-  .block-metric-label {{
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 4px;
-  }}
-  /* Highlights block */
-  .block-highlight {{
-    padding: 12px 16px;
+    position: relative;
     background: var(--bg);
     border: 1px solid var(--surface-border);
     border-left: 3px solid {metric_color};
     border-radius: var(--radius);
-    margin-bottom: 8px;
+    padding: 16px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }}
+  .block-metric-label {{
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }}
+  .block-metric-value {{
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: {metric_color};
+    line-height: 1.05;
+  }}
+
+  /* Highlights block — card style with accent */
+  .block-highlight {{
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--surface-border);
+    border-left: 3px solid {metric_color};
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 10px;
   }}
   .block-highlight:last-child {{ margin-bottom: 0; }}
   .block-highlight strong {{
     display: block;
-    font-size: 13px;
+    font-family: var(--font-display);
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.3;
   }}
   .block-highlight p {{
-    font-size: 12px;
-    color: var(--text-secondary);
-    line-height: 1.4;
-    margin: 0;
-  }}
-  /* Narrative block */
-  .content-block-narrative p {{
     font-size: 13px;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.5;
+    margin: 0;
   }}
-  /* List block */
+
+  /* Narrative block — styled prose */
+  .content-block-narrative {{
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }}
+  .content-block-narrative .block-title {{
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 10px;
+  }}
+  .content-block-narrative p {{
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin: 0;
+  }}
+
+  /* List block — tech pills style */
+  .block-pills {{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }}
+  .block-pills li {{
+    font-size: 12px;
+    font-weight: 600;
+    background: {tech_pill_bg};
+    color: {tech_pill_color};
+    padding: 6px 14px;
+    border-radius: 16px;
+  }}
   .block-list {{
     padding-left: 20px;
     font-size: 13px;
     color: var(--text-secondary);
+    margin: 0;
   }}
   .block-list li {{
-    margin-bottom: 6px;
-    line-height: 1.4;
+    margin-bottom: 8px;
+    line-height: 1.5;
   }}
-  /* Quote block */
+  .block-list li:last-child {{ margin-bottom: 0; }}
+
+  /* Quote block — styled testimonial */
   .content-block-quote {{
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+    padding: 24px 28px;
     position: relative;
-    padding-left: 20px;
   }}
   .block-quote-mark {{
     font-family: var(--font-display);
-    font-size: 48px;
+    font-size: 56px;
     color: {metric_color};
-    opacity: 0.3;
+    opacity: 0.25;
     position: absolute;
-    top: -10px;
-    left: 0;
+    top: 8px;
+    left: 20px;
+    line-height: 1;
   }}
   .block-quote-text {{
     font-family: var(--font-display);
-    font-size: 15px;
+    font-size: 16px;
     font-style: italic;
     color: var(--text-primary);
-    line-height: 1.5;
-    margin-bottom: 8px;
+    line-height: 1.55;
+    margin: 0 0 12px 28px;
   }}
   .block-quote-attr {{
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
+    margin-left: 28px;
   }}
-  /* Comparison block */
+  .block-quote-attr strong {{
+    color: var(--text-primary);
+  }}
+
+  /* Comparison block — before/after cards */
+  .block-comparisons {{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }}
   .block-comparison {{
-    padding: 10px 0;
-    border-bottom: 1px solid var(--surface-border);
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--surface-border);
+    border-left: 3px solid {metric_color};
+    border-radius: var(--radius);
+    padding: 14px 18px;
   }}
-  .block-comparison:last-child {{ border-bottom: none; }}
   .comparison-label {{
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     color: var(--text-secondary);
-    margin-bottom: 4px;
+    margin-bottom: 8px;
   }}
   .comparison-values {{
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }}
   .comparison-before {{
     font-size: 14px;
     color: var(--text-secondary);
+    text-decoration: line-through;
+    opacity: 0.7;
   }}
   .comparison-arrow {{
     color: {metric_color};
     font-weight: 700;
+    font-size: 16px;
   }}
   .comparison-after {{
     font-family: var(--font-display);
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 700;
     color: {metric_color};
+    line-height: 1;
   }}
 
   .footer {{
@@ -1359,26 +1438,32 @@ def build_css(version, partner_key=None):
     .tech-card p {{ font-size: 9px; line-height: 1.35; }}
 
     /* Flexible page 2 print */
-    .page2-flex-col {{ padding: 14px 18px; }}
-    .page2-flex-full {{ padding: 14px 18px; }}
-    .content-block {{ margin-bottom: 12px; }}
-    .block-title {{ font-size: 12px; margin-bottom: 8px; }}
+    .page2-flex-col {{ padding: 16px 20px; }}
+    .page2-flex-full {{ padding: 16px 20px; }}
+    .content-block {{ margin-bottom: 14px; }}
+    .block-title {{ font-size: 12px; margin-bottom: 10px; padding-bottom: 4px; }}
     .block-metrics-grid {{ gap: 8px; }}
-    .block-metric {{ padding: 10px 8px; }}
-    .block-metric-value {{ font-size: 20px; }}
+    .block-metric {{ padding: 12px 14px; }}
+    .block-metric-value {{ font-size: 24px; }}
     .block-metric-label {{ font-size: 9px; }}
-    .block-highlight {{ padding: 8px 12px; margin-bottom: 6px; }}
-    .block-highlight strong {{ font-size: 11px; }}
-    .block-highlight p {{ font-size: 10px; }}
+    .block-highlight {{ padding: 12px 14px; margin-bottom: 6px; }}
+    .block-highlight strong {{ font-size: 13px; }}
+    .block-highlight p {{ font-size: 11px; }}
+    .content-block-narrative {{ padding: 14px 16px; }}
     .content-block-narrative p {{ font-size: 11px; }}
+    .block-pills {{ gap: 5px; }}
+    .block-pills li {{ font-size: 10px; padding: 4px 10px; }}
     .block-list {{ font-size: 10px; }}
     .block-list li {{ margin-bottom: 4px; }}
-    .block-quote-mark {{ font-size: 32px; }}
-    .block-quote-text {{ font-size: 12px; }}
-    .block-quote-attr {{ font-size: 10px; }}
-    .comparison-label {{ font-size: 9px; }}
+    .content-block-quote {{ padding: 14px 18px; }}
+    .block-quote-mark {{ font-size: 36px; }}
+    .block-quote-text {{ font-size: 12px; margin-left: 20px; }}
+    .block-quote-attr {{ font-size: 10px; margin-left: 20px; }}
+    .block-comparisons {{ gap: 8px; }}
+    .block-comparison {{ padding: 10px 12px; }}
+    .comparison-label {{ font-size: 8px; }}
     .comparison-before {{ font-size: 11px; }}
-    .comparison-after {{ font-size: 14px; }}
+    .comparison-after {{ font-size: 16px; }}
 
     .footer {{ padding: 8px 18px; font-size: 9px; flex-shrink: 0; }}
   }}
