@@ -216,19 +216,26 @@ modern Windows Python installations.
 
 Follow this sequence. The user stays in control of content decisions at every step.
 
-### Step 1: Check for the input template
+### Step 1: Check for inputs
 
-Ask the user if they have a filled-in WinWire template (.xlsx). If not, generate one for them:
+Look for a WinWire template (.xlsx) in the workspace folder. Also check for attached project
+documents (SOWs, decks, PDFs, notes).
+
+**Path A — Template found:** Proceed to Step 2 (template + docs flow).
+
+**Path B — No template, but docs provided:** Proceed to Step 2b (docs-only flow). This is
+faster for the user but requires Q&A for deal metrics.
+
+**Path C — Neither template nor docs:** Generate a template for the user:
 
 ```bash
 python3 <SKILL_DIR>/scripts/create_template.py --output <WORKSPACE>/winwire-template.xlsx
 ```
 
-Present the template file and explain: "This is a quick form — just fill in the deal numbers
-and a few bullet points about the challenge and solution. Attach any project documents you have
-(SOWs, decks, notes, PDFs) and I'll extract everything else from them."
+Present the template and explain: "Fill in the deal numbers and attach any project documents.
+Or just drop your project docs here and I'll extract what I can and ask you for the rest."
 
-**Wait for the user to return with the filled template before proceeding.**
+**Wait for the user to return with either template or docs before proceeding.**
 
 ### Step 2: Read the template + extract from attached docs
 
@@ -255,6 +262,37 @@ Once the user provides the filled template and any supporting documents:
 
 3. **Merge results.** Template values (user input) always take priority over extracted values.
    Check the agent's `missing` array — if CRITICAL items are missing, ask the user directly.
+
+### Step 2b: Docs-only flow (no template)
+
+If the user provided documents but no template, use "full extraction mode":
+
+1. **Spawn the extraction agent** with `full_extraction: true` in the prompt context. This
+   tells the agent to also extract project identity fields (client name, industry, partner,
+   project type) that would normally come from the template.
+
+2. **Confirm inferred identity.** Present what the agent found:
+   > "I found this in your docs:
+   > - **Client:** [name]
+   > - **Industry:** [industry]
+   > - **Partner:** [aws/gcp/azure]
+   > - **Project type:** [type]
+   >
+   > Is this correct?"
+
+   Use `AskUserQuestion` with options: "Yes, correct" / "Fix something" / "Cancel"
+
+3. **Ask for deal metrics.** These are rarely in project docs — ask directly:
+   > "I need a few numbers that aren't typically in project docs:
+   > 1. **Services Revenue** — total CI&T contract value (e.g., $3.2M)
+   > 2. **Annual Cloud Revenue (ACR)** — recurring cloud spend (e.g., $1.2M)
+   > 3. **Incentive Funding** — partner program funding received (e.g., $280K MAP 2.0)
+   > 4. **Deal Cycle** — days from opportunity to close (e.g., 94 days)
+   >
+   > Please provide these, or type 'skip' for any you don't have."
+
+4. **Create the data structure.** Combine agent-extracted content with user-provided metrics,
+   then proceed to Step 3 (refine and present for approval).
 
 ### Step 3: Refine the summary and present for approval
 

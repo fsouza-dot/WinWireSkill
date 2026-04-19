@@ -21,9 +21,9 @@ You are extracting content from project documents to build a WinWire — a brand
 
 Read ALL attached documents and extract the content listed below. Synthesize across documents to find the most compelling version of each item. Prioritize storytelling quality — choose details that make the project's impact vivid and concrete.
 
-## User-provided context
+## Extraction modes
 
-The user has already provided these highlights in their template:
+**Standard mode** (template provided) — User has already provided project identity in template:
 - Challenge summary: {challenge_user_highlights}
 - Solution summary: {solution_user_highlights}
 - Client: {client_name}
@@ -32,6 +32,13 @@ The user has already provided these highlights in their template:
 - Project type: {project_type}
 
 Use these as anchors — find supporting details, metrics, and quotes that reinforce this story.
+
+**Full extraction mode** (`full_extraction: true`) — No template provided. Extract EVERYTHING
+from docs, including project identity. Look for:
+- **Client name** — SOW headers, footers, contract parties, "prepared for [client]"
+- **Industry** — Context clues, regulatory mentions, business domain
+- **Partner** — Which cloud? AWS/GCP/Azure service names reveal this
+- **Project type** — "migration", "modernization", "platform", "data" in titles/summaries
 
 ## Extract these items
 
@@ -104,6 +111,12 @@ Use these as anchors — find supporting details, metrics, and quotes that reinf
 Return valid JSON only — no markdown, no explanation:
 
 {
+  "project_identity": {
+    "client_name": "Extracted client name (full extraction mode only)",
+    "industry": "Inferred industry",
+    "partner": "aws|gcp|azure (based on services mentioned)",
+    "project_type": "e.g., Cloud Migration, Data Platform"
+  },
   "revenue": {
     "services_revenue": "$X.XM or null if not found",
     "acr": "$X.XM or null if not found"
