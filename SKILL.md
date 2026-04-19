@@ -368,7 +368,12 @@ every number that will appear in the WinWire:
 - **Quote** — text, author, title, company
 - **Context bar** — every label/value pair, for every version being produced
 - **Page 2 (if included)** — left section content, business-outcome cards, tech architecture cards
-- **Page 2 left section** — show the auto-detected type (challenges, scale, speed, milestones, innovation, compliance, integration, or phases) and ask if the user wants to change it
+- **Page 2 block variety check** — verify that left and right columns use DIFFERENT primary block types.
+  If both use the same type (e.g., both `highlights`), suggest alternatives before approval:
+  > "I notice both page 2 columns use 'highlights' blocks, which creates visual monotony.
+  > Suggested alternatives for better visual variety:
+  > - Left: `takeaway` + `timeline` (executive summary + visual journey)
+  > - Right: `kpi` + `comparison` (hero number + before/after transformation)"
 
 Format it clearly — headings and prose, not raw JSON. The user needs to be able to scan and
 point to what they want changed.

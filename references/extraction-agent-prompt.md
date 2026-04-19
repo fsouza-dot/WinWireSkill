@@ -155,6 +155,39 @@ whatever compelling content you find. Prioritize content that helps sales teams 
 - 3-5 blocks is ideal; quality over quantity
 - If nothing compelling, return empty blocks array (page 2 will be skipped)
 
+**CRITICAL: Column variety rule**
+
+Left and right columns MUST use different primary block types. Same type on both sides = amateur document. Variety = professional.
+
+```
+❌ BAD:   left=highlights, right=highlights    ← monotonous, unprofessional
+❌ BAD:   left=metrics, right=metrics          ← no visual contrast
+✓ GOOD:  left=takeaway+timeline, right=kpi+comparison
+✓ GOOD:  left=takeaway+metrics, right=highlights+proof-points
+```
+
+**Block selection decision tree** — match content to block type:
+
+| Content has...                    | Use block type   |
+|-----------------------------------|------------------|
+| Sequential phases/steps           | `timeline`       |
+| Before/after improvements         | `comparison`     |
+| One impressive hero number        | `kpi`            |
+| Multiple metrics with values      | `metrics`        |
+| Executive summary / "so what"     | `takeaway`       |
+| Achievements with outcomes        | `highlights`     |
+| Certifications / validations      | `proof-points`   |
+| Risk + mitigation pairs           | `risks`          |
+| Investment → returns breakdown    | `roi`            |
+
+**Recommended pairings for common content:**
+
+| Left column content | Right column content | Left types | Right types |
+|---------------------|----------------------|------------|-------------|
+| Project phases      | Business outcomes    | `takeaway` + `timeline` | `kpi` + `comparison` |
+| Discovery findings  | Results achieved     | `takeaway` + `highlights` | `metrics` + `proof-points` |
+| Approach + risks    | Impact + validation  | `takeaway` + `risks` | `kpi` + `proof-points` |
+
 **Column hints:**
 - `"column": "left"` — appears in left column
 - `"column": "right"` — appears in right column

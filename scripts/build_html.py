@@ -591,6 +591,19 @@ def build_page2_flexible(blocks, title, footer_text, tech_architecture=None, tec
         else:
             right_blocks.append(b)
 
+    # Check for block type variety between columns
+    if left_blocks and right_blocks:
+        left_types = [b.get("type", "highlights") for b in left_blocks]
+        right_types = [b.get("type", "highlights") for b in right_blocks]
+        left_primary = max(set(left_types), key=left_types.count)
+        right_primary = max(set(right_types), key=right_types.count)
+        if left_primary == right_primary:
+            print(f"⚠️  WARNING: Both columns use '{left_primary}' as primary block type.")
+            print(f"   This creates visual monotony — consider varying block types.")
+            print(f"   Left column:  {left_types}")
+            print(f"   Right column: {right_types}")
+            print(f"   Suggestions: timeline, comparison, kpi, metrics, takeaway, highlights")
+
     # Build HTML for each column
     left_html = "\n".join(build_content_block(b) for b in left_blocks) if left_blocks else ""
     right_html = "\n".join(build_content_block(b) for b in right_blocks) if right_blocks else ""
