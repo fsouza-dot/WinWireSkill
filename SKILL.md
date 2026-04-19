@@ -368,15 +368,44 @@ every number that will appear in the WinWire:
 - **Quote** — text, author, title, company
 - **Context bar** — every label/value pair, for every version being produced
 - **Page 2 (if included)** — left section content, business-outcome cards, tech architecture cards
-- **Page 2 block variety check** — verify that left and right columns use DIFFERENT primary block types.
-  If both use the same type (e.g., both `highlights`), suggest alternatives before approval:
-  > "I notice both page 2 columns use 'highlights' blocks, which creates visual monotony.
-  > Suggested alternatives for better visual variety:
-  > - Left: `takeaway` + `timeline` (executive summary + visual journey)
-  > - Right: `kpi` + `comparison` (hero number + before/after transformation)"
 
 Format it clearly — headings and prose, not raw JSON. The user needs to be able to scan and
 point to what they want changed.
+
+#### 🛑 Page 2 block variety — BLOCKING CHECK
+
+Before showing the approval question, check if left and right columns use the same primary
+block type. **If they do, you MUST resolve this with the user first — do not proceed to approval.**
+
+Same block type on both sides = amateur document. This is a quality gate.
+
+When block variety is violated:
+
+1. **Flag the problem explicitly:**
+   > "⚠️ Page 2 needs adjustment: both columns use 'highlights' blocks, which creates visual
+   > monotony and looks unprofessional."
+
+2. **Offer concrete alternatives:**
+   > "I recommend restructuring for visual variety:
+   > - **Left column:** `takeaway` (executive insight) + `timeline` (project phases)
+   > - **Right column:** `kpi` (hero metric) + `comparison` (before/after transformation)
+   >
+   > This gives you: callout box, timeline dots, big number, transformation arrows — four
+   > distinct visual patterns instead of two identical lists."
+
+3. **Ask the user to choose** via `AskUserQuestion`:
+   - Question: "How should I fix the page 2 layout?"
+   - Options:
+     - **Apply suggested restructure** (Recommended)
+     - **Keep current layout anyway** (not recommended)
+     - **Let me specify the block types**
+
+4. **Only after the user responds**, proceed to the content approval question.
+
+**Do NOT bundle this into a single "notes" section and continue.** Block variety must be
+resolved as a separate interaction before content approval.
+
+#### Content approval question
 
 Then, in the SAME message (but AFTER the preview), **call `AskUserQuestion`**:
 
@@ -397,6 +426,8 @@ Then, in the SAME message (but AFTER the preview), **call `AskUserQuestion`**:
   re-ask the approval question. Don't build anything in between.
 - If the user's message is ambiguous ("looks good" / "ok" / "sure") without picking one of the
   three options, re-ask the approval question explicitly — don't assume.
+- **Block variety violations must be resolved BEFORE content approval.** Do not present the
+  approval question if page 2 columns use the same primary block type — fix it first.
 
 ### Step 4: Build everything (only after the content gate passes)
 
