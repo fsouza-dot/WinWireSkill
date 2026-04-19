@@ -306,7 +306,18 @@ def build_tech_cards(cards):
 def build_content_block(block, accent_color="var(--accent)"):
     """Build a single content block for flexible page 2.
 
-    Block types: metrics, highlights, narrative, list, quote, comparison
+    Block types:
+    - metrics: Big numbers with optional delta and context
+    - highlights: Cards with headline, detail, optional impact badge
+    - comparison: Before → After with % change and timeframe
+    - narrative: Prose with optional key insight callout
+    - quote: Testimonial with company and role context
+    - takeaway: Executive summary "so what" box
+    - kpi: Single hero metric with trend
+    - timeline: Visual journey with milestones
+    - roi: Investment → Returns breakdown
+    - proof-points: Evidence/validation checkmarks
+    - risks: Risk → Mitigation pairs
     """
     block_type = block.get("type", "highlights")
     title = block.get("title", "")
@@ -314,13 +325,21 @@ def build_content_block(block, accent_color="var(--accent)"):
 
     title_html = f'<h3 class="block-title">{h(title)}</h3>' if title else ""
 
+    # ═══════════════════════════════════════════════════════════════════
+    # METRICS — Big numbers with optional delta and context
+    # ═══════════════════════════════════════════════════════════════════
     if block_type == "metrics":
-        # Big numbers grid — label above value like outcome-cards
         items_html = []
         for item in items:
+            delta = item.get("delta", "")
+            context = item.get("context", "")
+            delta_html = f'<div class="metric-delta">{h(delta)}</div>' if delta else ""
+            context_html = f'<div class="metric-context">{h(context)}</div>' if context else ""
             items_html.append(f"""        <div class="block-metric">
           <div class="block-metric-label">{h(item.get("label", ""))}</div>
           <div class="block-metric-value">{h(item.get("value", ""))}</div>
+          {delta_html}
+          {context_html}
         </div>""")
         return f"""      <div class="content-block content-block-metrics">
         {title_html}
@@ -329,12 +348,19 @@ def build_content_block(block, accent_color="var(--accent)"):
         </div>
       </div>"""
 
+    # ═══════════════════════════════════════════════════════════════════
+    # HIGHLIGHTS — Cards with optional impact badge
+    # ═══════════════════════════════════════════════════════════════════
     elif block_type == "highlights":
-        # Card list with headlines + details
         items_html = []
         for item in items:
+            impact = item.get("impact", "")
+            impact_html = f'<span class="highlight-impact">{h(impact)}</span>' if impact else ""
             items_html.append(f"""        <div class="block-highlight">
-          <strong>{h(item.get("headline", ""))}</strong>
+          <div class="highlight-header">
+            <strong>{h(item.get("headline", ""))}</strong>
+            {impact_html}
+          </div>
           <p>{h(item.get("detail", ""))}</p>
         </div>""")
         return f"""      <div class="content-block content-block-highlights">
@@ -342,43 +368,183 @@ def build_content_block(block, accent_color="var(--accent)"):
 {chr(10).join(items_html)}
       </div>"""
 
-    elif block_type == "narrative":
-        # Prose paragraph
-        text = block.get("text", "")
-        return f"""      <div class="content-block content-block-narrative">
-        {title_html}
-        <p>{h(text)}</p>
-      </div>"""
-
-    elif block_type == "quote":
-        # Testimonial block
-        text = block.get("text", "")
-        author = block.get("author", "")
-        author_title = block.get("author_title", "")
-        attr = f"<strong>{h(author)}</strong>, {h(author_title)}" if author else ""
-        return f"""      <div class="content-block content-block-quote">
-        <span class="block-quote-mark">&ldquo;</span>
-        <p class="block-quote-text">{h(text)}</p>
-        <p class="block-quote-attr">{attr}</p>
-      </div>"""
-
+    # ═══════════════════════════════════════════════════════════════════
+    # COMPARISON — Before → After with % change and timeframe
+    # ═══════════════════════════════════════════════════════════════════
     elif block_type == "comparison":
-        # Before → After pairs in card grid
         items_html = []
         for item in items:
+            change = item.get("change", "")
+            timeframe = item.get("timeframe", "")
+            change_html = f'<span class="comparison-change">{h(change)}</span>' if change else ""
+            timeframe_html = f'<div class="comparison-timeframe">{h(timeframe)}</div>' if timeframe else ""
             items_html.append(f"""          <div class="block-comparison">
             <div class="comparison-label">{h(item.get("label", ""))}</div>
             <div class="comparison-values">
               <span class="comparison-before">{h(item.get("before", ""))}</span>
               <span class="comparison-arrow">→</span>
               <span class="comparison-after">{h(item.get("after", ""))}</span>
+              {change_html}
             </div>
+            {timeframe_html}
           </div>""")
         return f"""      <div class="content-block content-block-comparison">
         {title_html}
         <div class="block-comparisons">
 {chr(10).join(items_html)}
         </div>
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # NARRATIVE — Prose with optional key insight callout
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "narrative":
+        text = block.get("text", "")
+        insight = block.get("insight", "")
+        insight_html = f'<div class="narrative-insight">{h(insight)}</div>' if insight else ""
+        return f"""      <div class="content-block content-block-narrative">
+        {title_html}
+        {insight_html}
+        <p>{h(text)}</p>
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # QUOTE — Testimonial with company and role context
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "quote":
+        text = block.get("text", "")
+        author = block.get("author", "")
+        author_title = block.get("author_title", "")
+        company = block.get("company", "")
+        role_context = block.get("role_context", "")
+
+        attr_parts = []
+        if author:
+            attr_parts.append(f"<strong>{h(author)}</strong>")
+        if author_title:
+            attr_parts.append(h(author_title))
+        if company:
+            attr_parts.append(h(company))
+        attr = ", ".join(attr_parts)
+
+        context_html = f'<div class="quote-role-context">{h(role_context)}</div>' if role_context else ""
+
+        return f"""      <div class="content-block content-block-quote">
+        <span class="block-quote-mark">&ldquo;</span>
+        <p class="block-quote-text">{h(text)}</p>
+        <p class="block-quote-attr">{attr}</p>
+        {context_html}
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # TAKEAWAY — Executive summary "so what" box (McKinsey style)
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "takeaway":
+        headline = block.get("headline", "")
+        bullets = block.get("bullets", [])
+        bullets_html = "\n".join(f"          <li>{h(b)}</li>" for b in bullets)
+        return f"""      <div class="content-block content-block-takeaway">
+        <div class="takeaway-label">KEY INSIGHT</div>
+        <div class="takeaway-headline">{h(headline)}</div>
+        <ul class="takeaway-bullets">
+{bullets_html}
+        </ul>
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # KPI — Single hero metric with trend (dashboard style)
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "kpi":
+        value = block.get("value", "")
+        label = block.get("label", "")
+        trend = block.get("trend", "")  # e.g., "↑ 217%"
+        context = block.get("context", "")  # e.g., "vs. 1,200 TPS before"
+        return f"""      <div class="content-block content-block-kpi">
+        <div class="kpi-trend">{h(trend)}</div>
+        <div class="kpi-value">{h(value)}</div>
+        <div class="kpi-label">{h(label)}</div>
+        <div class="kpi-context">{h(context)}</div>
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # TIMELINE — Visual journey with milestones
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "timeline":
+        items_html = []
+        for item in items:
+            items_html.append(f"""        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-date">{h(item.get("date", ""))}</div>
+            <div class="timeline-title">{h(item.get("title", ""))}</div>
+            <div class="timeline-detail">{h(item.get("detail", ""))}</div>
+          </div>
+        </div>""")
+        return f"""      <div class="content-block content-block-timeline">
+        {title_html}
+        <div class="timeline-track">
+{chr(10).join(items_html)}
+        </div>
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # ROI — Investment → Returns breakdown
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "roi":
+        investment = block.get("investment", "")
+        investment_label = block.get("investment_label", "Investment")
+        returns = block.get("returns", [])  # [{label, value}]
+        total_roi = block.get("total_roi", "")
+
+        returns_html = "\n".join(
+            f'        <div class="roi-line"><span>{h(r.get("label", ""))}</span><span>{h(r.get("value", ""))}</span></div>'
+            for r in returns
+        )
+        return f"""      <div class="content-block content-block-roi">
+        {title_html}
+        <div class="roi-investment">
+          <span>{h(investment_label)}</span>
+          <span class="roi-investment-value">{h(investment)}</span>
+        </div>
+        <div class="roi-divider"></div>
+        <div class="roi-returns">
+{returns_html}
+        </div>
+        <div class="roi-divider"></div>
+        <div class="roi-total">
+          <span>ROI</span>
+          <span class="roi-total-value">{h(total_roi)}</span>
+        </div>
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # PROOF-POINTS — Evidence/validation checkmarks
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "proof-points":
+        items_html = "\n".join(
+            f'        <li><span class="proof-check">✓</span> {h(item)}</li>'
+            for item in items
+        )
+        return f"""      <div class="content-block content-block-proof">
+        {title_html}
+        <ul class="proof-list">
+{items_html}
+        </ul>
+      </div>"""
+
+    # ═══════════════════════════════════════════════════════════════════
+    # RISKS — Risk → Mitigation pairs
+    # ═══════════════════════════════════════════════════════════════════
+    elif block_type == "risks":
+        items_html = []
+        for item in items:
+            items_html.append(f"""        <div class="risk-item">
+          <div class="risk-threat"><span class="risk-icon">⚠</span> {h(item.get("risk", ""))}</div>
+          <div class="risk-mitigation">→ {h(item.get("mitigation", ""))}</div>
+        </div>""")
+        return f"""      <div class="content-block content-block-risks">
+        {title_html}
+{chr(10).join(items_html)}
       </div>"""
 
     else:
@@ -1300,6 +1466,284 @@ def build_css(version, partner_key=None):
     color: {metric_color};
     line-height: 1;
   }}
+  .comparison-change {{
+    font-size: 12px;
+    font-weight: 700;
+    color: {metric_color};
+    margin-left: 8px;
+  }}
+  .comparison-timeframe {{
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    font-style: italic;
+  }}
+
+  /* Enhanced metrics — delta and context */
+  .metric-delta {{
+    font-size: 13px;
+    font-weight: 700;
+    color: {metric_color};
+    margin-top: 4px;
+  }}
+  .metric-context {{
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-style: italic;
+  }}
+
+  /* Enhanced highlights — impact badge */
+  .highlight-header {{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }}
+  .highlight-impact {{
+    font-size: 11px;
+    font-weight: 700;
+    color: {metric_color};
+    background: {tech_pill_bg};
+    padding: 3px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }}
+
+  /* Enhanced narrative — key insight callout */
+  .narrative-insight {{
+    font-size: 14px;
+    font-weight: 600;
+    color: {metric_color};
+    padding: 12px 16px;
+    background: {tech_pill_bg};
+    border-left: 3px solid {metric_color};
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin-bottom: 12px;
+  }}
+
+  /* Enhanced quote — role context */
+  .quote-role-context {{
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    margin-left: 28px;
+    font-style: italic;
+  }}
+
+  /* ═══ TAKEAWAY — Executive summary box ═══ */
+  .content-block-takeaway {{
+    background: {tech_pill_bg};
+    border: 2px solid {metric_color};
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }}
+  .takeaway-label {{
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: {metric_color};
+    margin-bottom: 10px;
+  }}
+  .takeaway-headline {{
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.35;
+    margin-bottom: 12px;
+  }}
+  .takeaway-bullets {{
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }}
+  .takeaway-bullets li {{
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }}
+  .takeaway-bullets li:last-child {{ margin-bottom: 0; }}
+
+  /* ═══ KPI — Single hero metric ═══ */
+  .content-block-kpi {{
+    text-align: center;
+    padding: 28px 24px;
+    background: var(--bg);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+  }}
+  .kpi-trend {{
+    font-size: 16px;
+    font-weight: 700;
+    color: {metric_color};
+    margin-bottom: 8px;
+  }}
+  .kpi-value {{
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    color: {metric_color};
+    line-height: 1;
+  }}
+  .kpi-label {{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 8px;
+  }}
+  .kpi-context {{
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-style: italic;
+  }}
+
+  /* ═══ TIMELINE — Visual journey ═══ */
+  .content-block-timeline {{
+    padding-left: 8px;
+  }}
+  .timeline-track {{
+    border-left: 2px solid {metric_color};
+    padding-left: 20px;
+  }}
+  .timeline-item {{
+    position: relative;
+    padding-bottom: 20px;
+  }}
+  .timeline-item:last-child {{ padding-bottom: 0; }}
+  .timeline-marker {{
+    position: absolute;
+    left: -26px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    background: {metric_color};
+    border-radius: 50%;
+  }}
+  .timeline-date {{
+    font-size: 12px;
+    font-weight: 700;
+    color: {metric_color};
+    margin-bottom: 4px;
+  }}
+  .timeline-title {{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }}
+  .timeline-detail {{
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }}
+
+  /* ═══ ROI — Investment breakdown ═══ */
+  .content-block-roi {{
+    background: var(--bg);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }}
+  .content-block-roi .block-title {{
+    margin-bottom: 16px;
+  }}
+  .roi-investment, .roi-line, .roi-total {{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 8px 0;
+  }}
+  .roi-investment-value {{
+    font-weight: 600;
+    color: var(--text-primary);
+  }}
+  .roi-divider {{
+    height: 1px;
+    background: var(--surface-border);
+    margin: 4px 0;
+  }}
+  .roi-returns {{
+    padding: 4px 0;
+  }}
+  .roi-total {{
+    font-weight: 700;
+    color: var(--text-primary);
+  }}
+  .roi-total-value {{
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: {metric_color};
+  }}
+
+  /* ═══ PROOF-POINTS — Evidence checkmarks ═══ */
+  .content-block-proof {{
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }}
+  .proof-list {{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }}
+  .proof-list li {{
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--surface-border);
+  }}
+  .proof-list li:last-child {{ border-bottom: none; }}
+  .proof-check {{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: {metric_color};
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }}
+
+  /* ═══ RISKS — Risk mitigation pairs ═══ */
+  .content-block-risks {{
+    background: var(--bg);
+  }}
+  .risk-item {{
+    padding: 14px 0;
+    border-bottom: 1px solid var(--surface-border);
+  }}
+  .risk-item:last-child {{ border-bottom: none; }}
+  .risk-threat {{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }}
+  .risk-icon {{
+    color: #E67E22;
+    font-size: 14px;
+  }}
+  .risk-mitigation {{
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding-left: 22px;
+    line-height: 1.5;
+  }}
 
   .footer {{
     padding: 20px 40px;
@@ -1452,6 +1896,35 @@ def build_css(version, partner_key=None):
     .comparison-label {{ font-size: 8px; }}
     .comparison-before {{ font-size: 11px; }}
     .comparison-after {{ font-size: 16px; }}
+    .comparison-change {{ font-size: 10px; }}
+    .comparison-timeframe {{ font-size: 8px; }}
+    .metric-delta {{ font-size: 11px; }}
+    .metric-context {{ font-size: 9px; }}
+    .highlight-impact {{ font-size: 9px; padding: 2px 8px; }}
+    .narrative-insight {{ font-size: 11px; padding: 8px 12px; }}
+    .quote-role-context {{ font-size: 9px; margin-left: 20px; }}
+    .content-block-takeaway {{ padding: 14px 18px; }}
+    .takeaway-label {{ font-size: 9px; }}
+    .takeaway-headline {{ font-size: 14px; }}
+    .takeaway-bullets {{ font-size: 11px; }}
+    .content-block-kpi {{ padding: 18px 16px; }}
+    .kpi-trend {{ font-size: 12px; }}
+    .kpi-value {{ font-size: 36px; }}
+    .kpi-label {{ font-size: 11px; }}
+    .kpi-context {{ font-size: 10px; }}
+    .timeline-track {{ padding-left: 14px; }}
+    .timeline-marker {{ width: 10px; height: 10px; left: -20px; }}
+    .timeline-date {{ font-size: 10px; }}
+    .timeline-title {{ font-size: 12px; }}
+    .timeline-detail {{ font-size: 10px; }}
+    .content-block-roi {{ padding: 14px 18px; }}
+    .roi-investment, .roi-line, .roi-total {{ font-size: 11px; }}
+    .roi-total-value {{ font-size: 18px; }}
+    .content-block-proof {{ padding: 14px 18px; }}
+    .proof-list li {{ font-size: 11px; padding: 6px 0; }}
+    .proof-check {{ width: 16px; height: 16px; font-size: 9px; }}
+    .risk-threat {{ font-size: 12px; }}
+    .risk-mitigation {{ font-size: 10px; }}
 
     .footer {{ padding: 8px 18px; font-size: 9px; flex-shrink: 0; }}
   }}

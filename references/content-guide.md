@@ -68,64 +68,131 @@ The build_html.py script expects a JSON file with this structure. All fields mar
   ],
 
   // ═══════════════════════════════════════════════════════════════════════
-  // PAGE 2 — FLEXIBLE BLOCKS FORMAT (preferred)
+  // PAGE 2 — FLEXIBLE BLOCKS FORMAT (McKinsey-level presentation standards)
   // ═══════════════════════════════════════════════════════════════════════
-  // Page 2 uses content blocks that adapt to whatever compelling content
-  // exists. Only include blocks with real content — don't pad with weak content.
-  // If no compelling content, set include: false to skip page 2 entirely.
+  // Page 2 uses content blocks that adapt to whatever compelling content exists.
+  // ALWAYS include a "takeaway" block (the executive "so what").
+  // Prioritize blocks with hard numbers. 3-5 blocks is ideal.
 
   "page2": {
     "include": true,
     "title": "Deep Dive: NovaPay Cloud Migration",
     "blocks": [
-      // METRICS — Big numbers that impress
+
+      // ─── TAKEAWAY — Executive summary "so what" (always include!) ───
+      {
+        "type": "takeaway",
+        "column": "left",
+        "headline": "Migration delivered 3x ROI in first year while reducing risk",
+        "bullets": ["$3.2M annual savings", "Zero security incidents", "40% faster deployments"]
+      },
+
+      // ─── KPI — Single hero metric with trend ───
+      {
+        "type": "kpi",
+        "column": "right",
+        "value": "3,800",
+        "label": "Transactions/Second",
+        "trend": "↑ 217%",
+        "context": "vs. 1,200 TPS before migration"
+      },
+
+      // ─── METRICS — Grid of numbers with optional delta/context ───
       {
         "type": "metrics",
         "title": "Business Impact",
         "column": "left",
         "items": [
-          {"value": "3.8K TPS", "label": "Transaction Throughput"},
-          {"value": "99.99%", "label": "Platform Uptime"},
-          {"value": "40%", "label": "Cost Reduction"}
+          {"value": "99.99%", "label": "Uptime", "delta": "↑0.49%", "context": "from 99.5%"},
+          {"value": "40%", "label": "Cost Reduction", "context": "infrastructure spend"}
         ]
       },
 
-      // HIGHLIGHTS — Key achievements with details
+      // ─── HIGHLIGHTS — Achievements with optional impact badge ───
       {
         "type": "highlights",
         "title": "Key Achievements",
         "column": "right",
         "items": [
-          {"headline": "Zero-Downtime Migration", "detail": "2TB database moved without service interruption"},
+          {"headline": "Zero-Downtime Migration", "detail": "2TB database moved live", "impact": "$0 revenue loss"},
           {"headline": "PCI Compliant", "detail": "Certified in 3 weeks vs typical 3 months"}
         ]
       },
 
-      // COMPARISON — Before → After pairs
+      // ─── COMPARISON — Before/after with % change and timeframe ───
       {
         "type": "comparison",
-        "title": "Before & After",
+        "title": "Transformation",
         "column": "left",
         "items": [
-          {"label": "Deployment Frequency", "before": "Monthly", "after": "Daily"},
-          {"label": "P99 Latency", "before": "1,200ms", "after": "180ms"}
+          {"label": "Deployment", "before": "Monthly", "after": "Daily", "change": "30x faster"},
+          {"label": "P99 Latency", "before": "1,200ms", "after": "180ms", "change": "↓85%", "timeframe": "achieved Q3"}
         ]
       },
 
-      // NARRATIVE — Prose paragraph for context
+      // ─── TIMELINE — Project journey milestones ───
+      {
+        "type": "timeline",
+        "title": "Project Journey",
+        "column": "right",
+        "items": [
+          {"date": "Q1", "title": "Discovery", "detail": "Mapped 47 services"},
+          {"date": "Q2", "title": "Platform Build", "detail": "EKS foundation live"},
+          {"date": "Q3", "title": "Migration", "detail": "12 services moved"},
+          {"date": "Q4", "title": "Optimization", "detail": "40% cost reduction achieved"}
+        ]
+      },
+
+      // ─── ROI — Investment breakdown ───
+      {
+        "type": "roi",
+        "title": "Return on Investment",
+        "column": "left",
+        "investment": "$1.8M",
+        "investment_label": "Total Investment",
+        "returns": [
+          {"label": "Annual Savings", "value": "$3.2M"},
+          {"label": "Risk Avoided", "value": "$800K"}
+        ],
+        "total_roi": "122%"
+      },
+
+      // ─── PROOF-POINTS — Evidence checkmarks ───
+      {
+        "type": "proof-points",
+        "title": "Validated Results",
+        "column": "right",
+        "items": ["SOC 2 Type II certified", "AWS Well-Architected reviewed", "Zero P1 incidents in 6 months", "Client NPS: 72"]
+      },
+
+      // ─── RISKS — Risk management pairs ───
+      {
+        "type": "risks",
+        "title": "Risks Managed",
+        "column": "left",
+        "items": [
+          {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"},
+          {"risk": "Performance degradation", "mitigation": "Load tested to 5x peak before cutover"}
+        ]
+      },
+
+      // ─── NARRATIVE — Prose with optional key insight callout ───
       {
         "type": "narrative",
         "title": "Our Approach",
         "column": "right",
+        "insight": "Incremental migration reduced risk by 80%",
         "text": "CI&T used event storming workshops to decompose the monolith into bounded contexts, then migrated services incrementally using the strangler fig pattern."
       },
 
-      // QUOTE — Additional testimonials (if not on page 1)
+      // ─── QUOTE — Testimonial with full context ───
       {
         "type": "quote",
         "text": "The CI&T team's deep AWS expertise made all the difference.",
         "author": "Sarah Johnson",
-        "author_title": "VP Engineering, NovaPay"
+        "author_title": "VP Engineering",
+        "company": "NovaPay",
+        "role_context": "Led 200-person engineering org"
       }
     ],
 

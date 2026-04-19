@@ -83,29 +83,83 @@ from docs, including project identity. Look for:
 
 ### MEDIUM (page 2 — flexible content blocks)
 
-Page 2 uses a flexible block system. Extract whatever compelling content you find and return
-it as blocks. Don't force content into rigid categories — if it doesn't exist, skip it.
+Page 2 uses a flexible block system with McKinsey-level presentation standards. Extract
+whatever compelling content you find. Prioritize content that helps sales teams sell.
 
-**Block types available (for left/right columns only):**
+**Block types available (for left/right columns):**
 
-| Type | When to Use | What to Extract |
-|------|-------------|-----------------|
-| `metrics` | Quantitative wins (numbers that impress) | Value + label pairs |
-| `highlights` | Key achievements, challenges solved | Headline + detail pairs |
-| `comparison` | Before/after improvements | Label + before + after |
-| `narrative` | Methodology, approach context | Prose paragraph |
-| `quote` | Additional testimonials | Text + author + title |
+| Type | When to Use | What to Extract | Where to Find |
+|------|-------------|-----------------|---------------|
+| `takeaway` | Every WinWire should have one | Key insight + supporting bullets | Executive summary, conclusions |
+| `kpi` | Single impressive hero metric | Value + trend + context | KPIs, dashboards, results sections |
+| `metrics` | Multiple quantitative wins | Value + label + optional delta/context | Performance reports, SLAs |
+| `highlights` | Key achievements solved | Headline + detail + optional impact badge | Milestones, deliverables |
+| `comparison` | Before/after improvements | Label + before + after + % change + timeframe | Results, improvements |
+| `timeline` | Project journey with dates | Date + title + detail per milestone | Project plans, timelines |
+| `roi` | Financial value breakdown | Investment + returns + total ROI | Business cases, ROI analyses |
+| `proof-points` | Evidence and validations | List of certifications, awards, validations | Compliance docs, certifications |
+| `risks` | Risk management | Risk + mitigation pairs | Risk registers, lessons learned |
+| `narrative` | Context or methodology | Prose + optional key insight callout | Approach docs, methodologies |
+| `quote` | Additional testimonials | Text + author + title + company + role context | Feedback, emails, surveys |
+
+**Extraction guidance for each type:**
+
+1. **takeaway** — The "so what" for executives
+   - Look for: Executive summaries, conclusions, "key findings" sections
+   - Extract: One bold headline statement + 2-4 supporting bullet points
+   - Example: "Migration delivered 3x ROI in year one" with bullets on savings, risk, speed
+
+2. **kpi** — Single hero metric that sells the story
+   - Look for: Dashboard screenshots, KPI reports, "headline metrics"
+   - Extract: The most impressive single number with trend (↑217%) and context
+   - Example: "3,800 TPS" with trend "↑217%" and context "vs 1,200 before"
+
+3. **metrics** — Grid of impressive numbers
+   - Look for: Results sections, performance reports, SLAs achieved
+   - Extract: Value + label, optionally add delta ("↑32%") and context ("vs industry avg")
+   - Example: {"value": "99.99%", "label": "Uptime", "delta": "↑0.49%", "context": "from 99.5%"}
+
+4. **highlights** — Achievement cards with impact
+   - Look for: Milestones, deliverables, "key wins" sections
+   - Extract: Headline + detail, optionally add impact badge ("$2.1M saved")
+   - Example: {"headline": "Zero-Downtime Migration", "detail": "2TB moved live", "impact": "$0 revenue loss"}
+
+5. **comparison** — Before → After transformation
+   - Look for: Results tables, improvement metrics, "before/after" comparisons
+   - Extract: Label + before + after, optionally add change ("↓85%") and timeframe ("in 6 months")
+   - Example: {"label": "Latency", "before": "1200ms", "after": "180ms", "change": "↓85%", "timeframe": "achieved in Q3"}
+
+6. **timeline** — Project journey milestones
+   - Look for: Project plans, phase summaries, milestone reports
+   - Extract: Date/phase + title + outcome for each milestone
+   - Example: {"date": "Q1 2024", "title": "Discovery", "detail": "Mapped 47 services"}
+
+7. **roi** — Financial value story
+   - Look for: Business cases, ROI calculations, cost-benefit analyses
+   - Extract: Investment amount, returns breakdown, total ROI percentage
+   - Example: investment "$1.8M", returns [{"label": "Annual Savings", "value": "$3.2M"}], total_roi "122%"
+
+8. **proof-points** — Evidence that builds credibility
+   - Look for: Certifications, compliance docs, awards, third-party validations
+   - Extract: List of validations achieved
+   - Example: ["SOC 2 Type II certified", "AWS Well-Architected reviewed", "Zero P1 incidents in 6 months"]
+
+9. **risks** — Risk management (shows professionalism)
+   - Look for: Risk registers, lessons learned, project retrospectives
+   - Extract: Risk + how it was mitigated
+   - Example: {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"}
 
 **Selection logic:**
-- Only include blocks with REAL content found in docs
-- Prioritize content that helps sales teams sell (hard numbers, clear wins)
-- 2-4 blocks is ideal; don't pad with weak content
-- If nothing compelling for page 2, return empty blocks array (page 2 will be skipped)
+- **ALWAYS include a `takeaway`** — this is the "so what" that executives scan for
+- Prioritize blocks with HARD NUMBERS — sales teams need concrete proof points
+- 3-5 blocks is ideal; quality over quantity
+- If nothing compelling, return empty blocks array (page 2 will be skipped)
 
 **Column hints:**
 - `"column": "left"` — appears in left column
 - `"column": "right"` — appears in right column
 - Omit column to let the system distribute evenly
+- Put `takeaway` or `kpi` in the left column (first thing seen)
 
 **Technology Architecture (separate, fixed section):**
 - Always extract tech_architecture as a separate array (not in blocks)
@@ -148,31 +202,100 @@ Return valid JSON only — no markdown, no explanation:
     "include": true,
     "title": "Deep Dive: [Client] [Project Type]",
     "blocks": [
+      // TAKEAWAY — Executive summary (always include if possible)
+      {
+        "type": "takeaway",
+        "column": "left",
+        "headline": "Migration delivered 3x ROI in first year while reducing risk",
+        "bullets": ["$3.2M annual savings", "Zero security incidents", "40% faster deployments"]
+      },
+
+      // KPI — Single hero metric
+      {
+        "type": "kpi",
+        "column": "right",
+        "value": "3,800",
+        "label": "Transactions/Second",
+        "trend": "↑ 217%",
+        "context": "vs. 1,200 TPS before migration"
+      },
+
+      // METRICS — Multiple numbers with optional delta/context
       {
         "type": "metrics",
         "title": "Business Impact",
         "column": "left",
         "items": [
-          {"value": "3.8K TPS", "label": "Transaction Throughput"},
-          {"value": "99.99%", "label": "Uptime"}
+          {"value": "99.99%", "label": "Uptime", "delta": "↑0.49%", "context": "from 99.5%"},
+          {"value": "40%", "label": "Cost Reduction"}
         ]
       },
+
+      // HIGHLIGHTS — Achievements with optional impact badge
       {
         "type": "highlights",
         "title": "Key Achievements",
         "column": "right",
         "items": [
-          {"headline": "Zero-Downtime Migration", "detail": "2TB moved live"},
-          {"headline": "PCI Compliant", "detail": "Certified in 3 weeks"}
+          {"headline": "Zero-Downtime Migration", "detail": "2TB database moved live", "impact": "$0 revenue loss"},
+          {"headline": "PCI Compliant", "detail": "Certified in 3 weeks vs typical 3 months"}
         ]
       },
+
+      // COMPARISON — Before/after with change % and timeframe
       {
         "type": "comparison",
-        "title": "Before & After",
+        "title": "Transformation",
         "column": "left",
         "items": [
-          {"label": "Deployment", "before": "Monthly", "after": "Daily"},
-          {"label": "Latency", "before": "1200ms", "after": "180ms"}
+          {"label": "Deployment", "before": "Monthly", "after": "Daily", "change": "30x faster"},
+          {"label": "Latency", "before": "1200ms", "after": "180ms", "change": "↓85%", "timeframe": "achieved Q3"}
+        ]
+      },
+
+      // TIMELINE — Project journey
+      {
+        "type": "timeline",
+        "title": "Project Journey",
+        "column": "right",
+        "items": [
+          {"date": "Q1", "title": "Discovery", "detail": "Mapped 47 services"},
+          {"date": "Q2", "title": "Platform Build", "detail": "EKS foundation live"},
+          {"date": "Q3", "title": "Migration", "detail": "12 services moved"},
+          {"date": "Q4", "title": "Optimization", "detail": "40% cost reduction"}
+        ]
+      },
+
+      // ROI — Financial breakdown
+      {
+        "type": "roi",
+        "title": "Return on Investment",
+        "column": "left",
+        "investment": "$1.8M",
+        "investment_label": "Total Investment",
+        "returns": [
+          {"label": "Annual Savings", "value": "$3.2M"},
+          {"label": "Risk Avoided", "value": "$800K"}
+        ],
+        "total_roi": "122%"
+      },
+
+      // PROOF-POINTS — Evidence list
+      {
+        "type": "proof-points",
+        "title": "Validated Results",
+        "column": "right",
+        "items": ["SOC 2 Type II certified", "AWS Well-Architected reviewed", "Zero P1 incidents in 6 months"]
+      },
+
+      // RISKS — Risk management
+      {
+        "type": "risks",
+        "title": "Risks Managed",
+        "column": "left",
+        "items": [
+          {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"},
+          {"risk": "Performance degradation", "mitigation": "Load tested to 5x peak before cutover"}
         ]
       }
     ],
