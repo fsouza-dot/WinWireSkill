@@ -296,9 +296,13 @@ def build_tech_cards(cards):
     """Build the 3x2 technology architecture cards."""
     parts = []
     for card in cards:
+        # Handle various key names for category/title
+        category = card.get("category") or card.get("name") or card.get("title") or ""
+        # Handle various key names for description/content
+        description = card.get("description") or card.get("content") or card.get("detail") or ""
         parts.append(f"""          <div class="tech-card">
-            <h4>{h(card["category"])}</h4>
-            <p>{h(card["description"])}</p>
+            <h4>{h(category)}</h4>
+            <p>{h(description)}</p>
           </div>""")
     return "\n".join(parts)
 
@@ -331,6 +335,9 @@ def build_content_block(block, accent_color="var(--accent)"):
     if block_type == "metrics":
         items_html = []
         for item in items:
+            # Handle string items (convert to dict)
+            if isinstance(item, str):
+                item = {"value": item, "label": ""}
             delta = item.get("delta", "")
             context = item.get("context", "")
             delta_html = f'<div class="metric-delta">{h(delta)}</div>' if delta else ""
@@ -354,6 +361,9 @@ def build_content_block(block, accent_color="var(--accent)"):
     elif block_type == "highlights":
         items_html = []
         for item in items:
+            # Handle string items (convert to dict)
+            if isinstance(item, str):
+                item = {"headline": item, "detail": ""}
             impact = item.get("impact", "")
             impact_html = f'<span class="highlight-impact">{h(impact)}</span>' if impact else ""
             items_html.append(f"""        <div class="block-highlight">
@@ -374,6 +384,9 @@ def build_content_block(block, accent_color="var(--accent)"):
     elif block_type == "comparison":
         items_html = []
         for item in items:
+            # Handle string items (convert to dict)
+            if isinstance(item, str):
+                item = {"label": item, "before": "", "after": ""}
             change = item.get("change", "")
             timeframe = item.get("timeframe", "")
             change_html = f'<span class="comparison-change">{h(change)}</span>' if change else ""
@@ -472,6 +485,9 @@ def build_content_block(block, accent_color="var(--accent)"):
     elif block_type == "timeline":
         items_html = []
         for item in items:
+            # Handle string items (convert to dict)
+            if isinstance(item, str):
+                item = {"title": item, "date": "", "detail": ""}
             items_html.append(f"""        <div class="timeline-item">
           <div class="timeline-marker"></div>
           <div class="timeline-content">
@@ -497,7 +513,7 @@ def build_content_block(block, accent_color="var(--accent)"):
         total_roi = block.get("total_roi", "")
 
         returns_html = "\n".join(
-            f'        <div class="roi-line"><span>{h(r.get("label", ""))}</span><span>{h(r.get("value", ""))}</span></div>'
+            f'        <div class="roi-line"><span>{h(r.get("label", "") if isinstance(r, dict) else r)}</span><span>{h(r.get("value", "") if isinstance(r, dict) else "")}</span></div>'
             for r in returns
         )
         return f"""      <div class="content-block content-block-roi">
@@ -538,6 +554,9 @@ def build_content_block(block, accent_color="var(--accent)"):
     elif block_type == "risks":
         items_html = []
         for item in items:
+            # Handle string items (convert to dict)
+            if isinstance(item, str):
+                item = {"risk": item, "mitigation": ""}
             items_html.append(f"""        <div class="risk-item">
           <div class="risk-threat"><span class="risk-icon">⚠</span> {h(item.get("risk", ""))}</div>
           <div class="risk-mitigation">→ {h(item.get("mitigation", ""))}</div>
