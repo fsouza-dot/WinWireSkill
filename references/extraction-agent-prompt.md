@@ -8,18 +8,55 @@ Use this prompt template when spawning the Haiku agent to extract WinWire conten
 Agent({
   description: "Extract WinWire content from project docs",
   model: "haiku",
-  prompt: <see template below>
+  prompt: `
+    <paste the template below>
+    
+    ## Files to read
+    
+    Read ALL of the following files using the Read tool. Do not skip any.
+    
+    ${discoveredFiles.map(f => `- ${f}`).join('\n')}
+    
+    After reading all files, extract the content as specified above.
+  `
 })
 ```
+
+**CRITICAL:** The main agent MUST include the full list of discovered file paths in the prompt.
+The extraction agent cannot discover files on its own — it can only read paths given to it.
 
 ## Prompt Template
 
 ```
 You are extracting content from project documents to build a WinWire — a branded success story combining a deal announcement with a mini case study.
 
-## Your task
+## TL;DR — read this first
 
-Read ALL attached documents and extract the content listed below. Synthesize across documents to find the most compelling version of each item. Prioritize storytelling quality — choose details that make the project's impact vivid and concrete.
+1. **Read EVERY file** listed at the end of this prompt — do not skip any
+2. **Quality over quantity** — empty pools are fine, weak content is not
+3. **Every item must have CONCRETE details** (numbers, names, dates, specifics)
+4. **Prioritize:** executive_insights > hero_metrics > transformations > achievements > rest
+5. **If a pool would only have generic content, leave it empty**
+
+## Step 1: Read all files
+
+You will receive a list of file paths at the end of this prompt. You MUST:
+
+1. Use the Read tool to read EVERY file in the list — no exceptions
+2. For large files (>500 lines), read in chunks to get full content
+3. Track what you've read: mentally check off each file
+4. Do NOT proceed to extraction until you have read every file
+
+**Common file locations for key content:**
+- Revenue/pricing → SOW, contract, deal desk docs
+- Challenge/problem → Executive summary, current state analysis
+- Solution/approach → Technical approach, architecture sections
+- Metrics/outcomes → Results, KPIs, dashboards, reports
+- Quotes → Emails, feedback, NPS surveys, testimonials
+
+## Step 2: Extract content
+
+After reading ALL files, extract the content below. Synthesize across documents to find the BEST version of each item — not all versions, just the most compelling.
 
 ## Extraction modes
 
@@ -149,47 +186,72 @@ whatever compelling content you find. Prioritize content that helps sales teams 
    - Extract: Risk + how it was mitigated
    - Example: {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"}
 
-**CRITICAL: Extract ALL content into raw pools**
+**CRITICAL: Extract BEST content into raw pools (quality over quantity)**
 
-Do NOT select block types or assign columns. Your job is to extract ALL compelling content
-into categorized pools. The main agent will analyze these pools and select the best layout.
+Do NOT select block types or assign columns. Your job is to extract the BEST compelling content
+into categorized pools. The main agent will analyze these pools and select the layout.
 
-Extract EVERYTHING you find for each category — multiple items per pool is good. This gives
-the main agent options to choose from and ensures visual variety in the final document.
+**Empty pools are fine. Weak content is worse than no content.**
+
+Include multiple items per pool ONLY if each item independently meets the quality bar.
+
+**Pool priority — focus your effort here:**
+
+| Priority | Pool | Why |
+|----------|------|-----|
+| CRITICAL | `executive_insights` | The "so what" that sells the story |
+| CRITICAL | `hero_metrics` | The one number everyone remembers |
+| CRITICAL | `transformations` | Before/after proves impact |
+| HIGH | `project_phases` | Shows structured delivery |
+| HIGH | `achievements` | Concrete wins with impact |
+| MEDIUM | `metric_sets` | Supporting numbers |
+| MEDIUM | `validations` | Third-party credibility |
+| LOW | `financial_analysis` | Rarely complete in docs |
+| LOW | `risks_managed` | Only if well-documented |
+
+**Quality bar — only extract content that passes:**
+
+| Pool | MUST have | SKIP if |
+|------|-----------|---------|
+| `executive_insights` | Bold claim + supporting evidence | Generic ("improved efficiency") |
+| `hero_metrics` | Specific number + trend OR context | No number, or number without meaning |
+| `metric_sets` | At least 2 concrete values | Single vague metric |
+| `achievements` | Headline + concrete detail | Just a title with no substance |
+| `transformations` | Before AND after values | Only "after" with no baseline |
+| `project_phases` | 3+ phases with outcomes | Just phase names, no details |
+| `financial_analysis` | Investment AND at least one return | Only costs, no returns |
+| `validations` | Third-party or quantified evidence | Self-reported claims |
+| `risks_managed` | Specific risk + specific mitigation | Generic risk statements |
+
+**Examples of GOOD vs BAD content:**
+
+```
+❌ BAD metric: "Improved performance"
+✓ GOOD metric: {"value": "180ms", "label": "P99 Latency", "trend": "↓85%", "context": "from 1,200ms"}
+
+❌ BAD achievement: {"headline": "Successful migration", "detail": "Completed on time"}
+✓ GOOD achievement: {"headline": "Zero-Downtime Migration", "detail": "2TB database moved live", "impact": "$0 revenue loss"}
+
+❌ BAD transformation: {"label": "Speed", "before": "Slow", "after": "Fast"}
+✓ GOOD transformation: {"label": "Deployment", "before": "Monthly", "after": "Daily", "change": "30x faster"}
+
+❌ BAD insight: "The project was successful and met all objectives"
+✓ GOOD insight: {"headline": "AI cuts discovery from months to weeks", "bullets": ["60% context pre-captured", "4 parallel tracks", "9 OpCos unified"]}
+```
 
 **Raw content pools to populate:**
 
 | Pool | What to extract | Where to find it |
 |------|-----------------|------------------|
-| `executive_insights` | Bold headline statements + supporting bullets | Executive summaries, conclusions, "key findings" |
-| `hero_metrics` | Single impressive numbers with trend + context | KPI dashboards, headline metrics, "bottom line" |
-| `metric_sets` | Multiple quantitative results | Performance reports, SLAs, results sections |
-| `achievements` | Accomplishments with details + optional impact | Milestones, deliverables, "key wins" |
-| `transformations` | Before → after improvements | Results tables, "improvements", comparisons |
-| `project_phases` | Sequential steps with dates/phases | Project plans, phase summaries, timelines |
-| `financial_analysis` | Investment, returns, ROI | Business cases, cost-benefit analyses |
-| `validations` | Certifications, awards, evidence | Compliance docs, third-party reviews |
-| `risks_managed` | Risk + mitigation pairs | Risk registers, lessons learned, retrospectives |
-
-**Extraction guidance:**
-
-- **executive_insights**: Find the "so what" — the one-liner an executive would quote. Include 2-4 supporting bullets. Extract ALL insights you find, not just one.
-
-- **hero_metrics**: Look for the most impressive single numbers. Include trend (↑217%) and context (vs. baseline). Extract ALL impressive metrics — the main agent will pick the best.
-
-- **metric_sets**: Any quantitative results. Include delta and context where available. Extract ALL metrics found.
-
-- **achievements**: What was delivered? What was accomplished? Include impact where mentioned ($2.1M saved). Extract ALL achievements.
-
-- **transformations**: Any before/after comparison. Include % change and timeframe. Extract ALL transformations found.
-
-- **project_phases**: Sequential phases, milestones, sprints, quarters. Include dates and outcomes. Extract the FULL journey.
-
-- **financial_analysis**: Investment amount, returns breakdown, ROI percentage. Partial data is OK — extract what exists.
-
-- **validations**: Certifications, compliance, awards, third-party validations, client NPS. Extract ALL evidence of quality.
-
-- **risks_managed**: Problems anticipated and how they were handled. Shows professionalism. Extract ALL risk/mitigation pairs.
+| `executive_insights` | Bold headline + 2-4 supporting bullets | Executive summaries, conclusions |
+| `hero_metrics` | Single number + trend + context | KPI dashboards, headline metrics |
+| `metric_sets` | Multiple concrete values with labels | Performance reports, SLAs |
+| `achievements` | Headline + detail + optional impact badge | Milestones, deliverables |
+| `transformations` | Before + after + % change | Results tables, comparisons |
+| `project_phases` | Date/phase + title + outcome | Project plans, timelines |
+| `financial_analysis` | Investment + returns + ROI | Business cases, cost-benefit |
+| `validations` | Third-party evidence, certifications | Compliance docs, reviews |
+| `risks_managed` | Specific risk + specific mitigation | Risk registers, retrospectives |
 
 **Technology Architecture (separate, fixed section):**
 - Always extract tech_architecture as a separate array
@@ -232,10 +294,11 @@ Return valid JSON only — no markdown, no explanation:
     "include": true,
     "title": "Deep Dive: [Client] [Project Type]",
 
-    // RAW CONTENT POOLS — extract ALL content, let main agent select layout
+    // RAW CONTENT POOLS — extract BEST content that meets quality bar
+    // Empty pools are OK — weak content is worse than no content
     "raw": {
       "executive_insights": [
-        // Extract ALL "so what" statements found
+        // The "so what" with supporting evidence
         {
           "headline": "Migration delivered 3x ROI in first year",
           "bullets": ["$3.2M annual savings", "Zero security incidents", "40% faster deployments"]
@@ -243,62 +306,46 @@ Return valid JSON only — no markdown, no explanation:
       ],
 
       "hero_metrics": [
-        // Extract ALL impressive single numbers
-        {"value": "3,800", "label": "Transactions/Second", "trend": "↑217%", "context": "vs 1,200 before"},
-        {"value": "99.99%", "label": "Uptime", "trend": "↑0.49%", "context": "from 99.5%"}
+        // Only impressive numbers with trend + context
+        {"value": "3,800", "label": "Transactions/Second", "trend": "↑217%", "context": "vs 1,200 before"}
       ],
 
       "metric_sets": [
-        // Extract ALL quantitative results
+        // Multiple concrete values (skip if <2)
         {"value": "40%", "label": "Cost Reduction", "context": "infrastructure spend"},
-        {"value": "6", "label": "AWS Services", "context": "core services adopted"},
         {"value": "$1.2M", "label": "Annual Cloud Revenue"}
       ],
 
       "achievements": [
-        // Extract ALL accomplishments with impact
-        {"headline": "Zero-Downtime Migration", "detail": "2TB database moved live", "impact": "$0 revenue loss"},
-        {"headline": "PCI Compliant", "detail": "Certified in 3 weeks vs typical 3 months"}
+        // Concrete accomplishments with real detail
+        {"headline": "Zero-Downtime Migration", "detail": "2TB database moved live", "impact": "$0 revenue loss"}
       ],
 
       "transformations": [
-        // Extract ALL before/after comparisons
+        // Before AND after required
         {"label": "Deployment", "before": "Monthly", "after": "Daily", "change": "30x faster"},
-        {"label": "P99 Latency", "before": "1200ms", "after": "180ms", "change": "↓85%", "timeframe": "achieved Q3"}
+        {"label": "P99 Latency", "before": "1200ms", "after": "180ms", "change": "↓85%"}
       ],
 
       "project_phases": [
-        // Extract FULL project journey
+        // 3+ phases with outcomes
         {"date": "Q1", "title": "Discovery", "detail": "Mapped 47 services"},
         {"date": "Q2", "title": "Platform Build", "detail": "EKS foundation live"},
         {"date": "Q3", "title": "Migration", "detail": "12 services moved"},
         {"date": "Q4", "title": "Optimization", "detail": "40% cost reduction achieved"}
       ],
 
-      "financial_analysis": {
-        // Extract ROI data (partial OK)
-        "investment": "$1.8M",
-        "investment_label": "Total Investment",
-        "returns": [
-          {"label": "Annual Savings", "value": "$3.2M"},
-          {"label": "Risk Avoided", "value": "$800K"}
-        ],
-        "total_roi": "122%"
-      },
+      // Empty — no complete ROI data found (this is OK)
+      "financial_analysis": null,
 
       "validations": [
-        // Extract ALL evidence of quality
+        // Third-party evidence only
         "SOC 2 Type II certified",
-        "AWS Well-Architected reviewed",
-        "Zero P1 incidents in 6 months",
-        "Client NPS: 72"
+        "AWS Well-Architected reviewed"
       ],
 
-      "risks_managed": [
-        // Extract ALL risk/mitigation pairs
-        {"risk": "Data loss during migration", "mitigation": "Blue-green deployment with 3x tested rollback"},
-        {"risk": "Performance degradation", "mitigation": "Load tested to 5x peak before cutover"}
-      ]
+      // Empty — no documented risk/mitigation pairs found (this is OK)
+      "risks_managed": []
     },
 
     "tech_architecture": [

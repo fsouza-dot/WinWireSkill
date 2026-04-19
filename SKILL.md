@@ -262,19 +262,34 @@ Once the user provides the filled template and any supporting documents:
 
    Tell the user what you found: "Found 12 documents across 4 folders. Reading them now..."
 
-3. **Spawn an extraction agent** to read all discovered documents. Use Haiku for cost efficiency:
+3. **Spawn an extraction agent** with the discovered file paths explicitly listed:
 
    ```
    Agent({
      description: "Extract WinWire content from project docs",
      model: "haiku",
-     prompt: <use template from references/extraction-agent-prompt.md>
+     prompt: `
+       <paste full prompt from references/extraction-agent-prompt.md>
+       
+       ## Files to read
+       
+       Read ALL of the following files using the Read tool. Do not skip any.
+       After reading all files, extract the content as specified above.
+       
+       - /path/to/file1.pdf
+       - /path/to/file2.docx
+       - /path/to/file3.pptx
+       ... (list ALL discovered files)
+     `
    })
    ```
 
-   The agent reads ALL docs in parallel, synthesizes across them, and returns structured JSON
-   with the most compelling content for storytelling. See `references/extraction-agent-prompt.md`
-   for the full prompt template and output schema.
+   **CRITICAL:** You MUST include the full list of discovered file paths at the end of the prompt.
+   The extraction agent cannot discover files on its own — it can only read paths you give it.
+   If you don't include the file list, the agent will have nothing to read.
+
+   The agent reads all files, synthesizes across them, and returns structured JSON with raw
+   content pools. See `references/extraction-agent-prompt.md` for the full prompt template.
 
 4. **Merge results.** Template values (user input) always take priority over extracted values.
    Check the agent's `missing` array — if CRITICAL items are missing, ask the user directly.
@@ -286,9 +301,30 @@ If the user provided documents but no template, use "full extraction mode":
 1. **Discover all documents** in the workspace folder recursively (same file types as Step 2).
    Tell the user what you found: "Found 8 documents. Reading them to extract WinWire content..."
 
-2. **Spawn the extraction agent** with `full_extraction: true` in the prompt context. This
-   tells the agent to also extract project identity fields (client name, industry, partner,
-   project type) that would normally come from the template.
+2. **Spawn the extraction agent** with `full_extraction: true` AND the file list:
+
+   ```
+   Agent({
+     description: "Extract WinWire content from project docs",
+     model: "haiku",
+     prompt: `
+       <extraction prompt with full_extraction: true>
+       
+       ## Files to read
+       
+       Read ALL of the following files. Do not skip any.
+       
+       - /path/to/file1.pdf
+       - /path/to/file2.docx
+       ... (list ALL discovered files)
+     `
+   })
+   ```
+
+   **CRITICAL:** Include the full file list. The agent cannot discover files on its own.
+   
+   With `full_extraction: true`, the agent also extracts project identity (client name,
+   industry, partner, project type) that would normally come from the template.
 
 3. **Confirm inferred identity.** Present what the agent found:
    > "I found this in your docs:
