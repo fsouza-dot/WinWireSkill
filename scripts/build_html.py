@@ -214,10 +214,16 @@ def build_page2_left_section(page2_left, fallback_phases=None):
     title = page2_left.get("title", "Project Approach")
     items = page2_left.get("items", [])
 
-    if content_type == "phases" or not items:
+    if not items:
+        # No items in page2_left — fall back to phases array
         if fallback_phases:
             return build_phases_html(fallback_phases), title
         return "", title
+
+    if content_type == "phases":
+        # Render page2_left.items as numbered phases (convert headline/detail to name/description)
+        phases = [{"name": item.get("headline", ""), "description": item.get("detail", "")} for item in items]
+        return build_phases_html(phases), title
 
     # All other types use a card-based layout
     parts = []
