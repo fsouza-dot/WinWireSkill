@@ -303,6 +303,162 @@ def build_tech_cards(cards):
     return "\n".join(parts)
 
 
+def build_content_block(block, accent_color="var(--accent)"):
+    """Build a single content block for flexible page 2.
+
+    Block types: metrics, highlights, narrative, list, quote, comparison
+    """
+    block_type = block.get("type", "highlights")
+    title = block.get("title", "")
+    items = block.get("items", [])
+
+    title_html = f'<h3 class="block-title">{h(title)}</h3>' if title else ""
+
+    if block_type == "metrics":
+        # Big numbers grid
+        items_html = []
+        for item in items:
+            items_html.append(f"""        <div class="block-metric">
+          <div class="block-metric-value">{h(item.get("value", ""))}</div>
+          <div class="block-metric-label">{h(item.get("label", ""))}</div>
+        </div>""")
+        return f"""      <div class="content-block content-block-metrics">
+        {title_html}
+        <div class="block-metrics-grid">
+{chr(10).join(items_html)}
+        </div>
+      </div>"""
+
+    elif block_type == "highlights":
+        # Card list with headlines + details
+        items_html = []
+        for item in items:
+            items_html.append(f"""        <div class="block-highlight">
+          <strong>{h(item.get("headline", ""))}</strong>
+          <p>{h(item.get("detail", ""))}</p>
+        </div>""")
+        return f"""      <div class="content-block content-block-highlights">
+        {title_html}
+{chr(10).join(items_html)}
+      </div>"""
+
+    elif block_type == "narrative":
+        # Prose paragraph
+        text = block.get("text", "")
+        return f"""      <div class="content-block content-block-narrative">
+        {title_html}
+        <p>{h(text)}</p>
+      </div>"""
+
+    elif block_type == "list":
+        # Bulleted or numbered list
+        list_style = block.get("style", "bullet")  # bullet or numbered
+        tag = "ol" if list_style == "numbered" else "ul"
+        items_html = "\n".join(f"          <li>{h(item)}</li>" for item in items)
+        return f"""      <div class="content-block content-block-list">
+        {title_html}
+        <{tag} class="block-list">
+{items_html}
+        </{tag}>
+      </div>"""
+
+    elif block_type == "quote":
+        # Testimonial block
+        text = block.get("text", "")
+        author = block.get("author", "")
+        author_title = block.get("author_title", "")
+        attr = f"<strong>{h(author)}</strong>, {h(author_title)}" if author else ""
+        return f"""      <div class="content-block content-block-quote">
+        <span class="block-quote-mark">&ldquo;</span>
+        <p class="block-quote-text">{h(text)}</p>
+        <p class="block-quote-attr">{attr}</p>
+      </div>"""
+
+    elif block_type == "comparison":
+        # Before → After pairs
+        items_html = []
+        for item in items:
+            items_html.append(f"""        <div class="block-comparison">
+          <div class="comparison-label">{h(item.get("label", ""))}</div>
+          <div class="comparison-values">
+            <span class="comparison-before">{h(item.get("before", ""))}</span>
+            <span class="comparison-arrow">→</span>
+            <span class="comparison-after">{h(item.get("after", ""))}</span>
+          </div>
+        </div>""")
+        return f"""      <div class="content-block content-block-comparison">
+        {title_html}
+{chr(10).join(items_html)}
+      </div>"""
+
+    else:
+        # Fallback: treat as highlights
+        return build_content_block({**block, "type": "highlights"}, accent_color)
+
+
+def build_page2_flexible(blocks, title, footer_text):
+    """Build flexible page 2 from content blocks."""
+    if not blocks:
+        return ""
+
+    # Separate blocks by column
+    left_blocks = [b for b in blocks if b.get("column") == "left"]
+    right_blocks = [b for b in blocks if b.get("column") == "right"]
+    full_blocks = [b for b in blocks if b.get("column") == "full"]
+    # Unspecified blocks: distribute evenly
+    unspecified = [b for b in blocks if b.get("column") not in ("left", "right", "full")]
+    for i, b in enumerate(unspecified):
+        if i % 2 == 0:
+            left_blocks.append(b)
+        else:
+            right_blocks.append(b)
+
+    # Build HTML for each column
+    left_html = "\n".join(build_content_block(b) for b in left_blocks) if left_blocks else ""
+    right_html = "\n".join(build_content_block(b) for b in right_blocks) if right_blocks else ""
+    full_html = "\n".join(build_content_block(b) for b in full_blocks) if full_blocks else ""
+
+    # Determine layout class
+    if left_blocks and right_blocks:
+        layout_class = "page2-flex-two-col"
+    else:
+        layout_class = "page2-flex-one-col"
+
+    columns_html = ""
+    if left_html:
+        columns_html += f"""
+      <div class="page2-flex-col page2-flex-left">
+{left_html}
+      </div>"""
+    if right_html:
+        columns_html += f"""
+      <div class="page2-flex-col page2-flex-right">
+{right_html}
+      </div>"""
+
+    full_section = f"""
+      <div class="page2-flex-full">
+{full_html}
+      </div>""" if full_html else ""
+
+    return f"""
+  <div class="page-break">
+    <div class="page2-header">
+      <h2>{h(title)}</h2>
+      <span>Page 2 — Details</span>
+    </div>
+
+    <div class="page2-flex {layout_class}">
+{columns_html}
+    </div>
+{full_section}
+    <div class="footer">
+      {footer_text}
+    </div>
+
+  </div>"""
+
+
 def resolve_logo_src(value, data_dir=None):
     """Resolve a logo value into an HTML `src` attribute value.
 
@@ -921,6 +1077,163 @@ def build_css(version, partner_key=None):
   .tech-card h4 {{ font-size: 13px; font-weight: 600; margin-bottom: 4px; {tech_card_h4_color} }}
   .tech-card p {{ font-size: 12px; color: var(--text-secondary); line-height: 1.45; }}
 
+  /* ════════ FLEXIBLE PAGE 2 ════════ */
+  .page2-flex {{
+    display: grid;
+    gap: 0;
+  }}
+  .page2-flex-two-col {{
+    grid-template-columns: 1fr 1fr;
+  }}
+  .page2-flex-one-col {{
+    grid-template-columns: 1fr;
+  }}
+  .page2-flex-col {{
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--surface-border);
+  }}
+  .page2-flex-left {{
+    border-right: 1px solid var(--surface-border);
+  }}
+  .page2-flex-full {{
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--surface-border);
+  }}
+  .content-block {{
+    margin-bottom: 20px;
+  }}
+  .content-block:last-child {{
+    margin-bottom: 0;
+  }}
+  .block-title {{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }}
+  /* Metrics block */
+  .block-metrics-grid {{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }}
+  .block-metric {{
+    text-align: center;
+    padding: 16px 12px;
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+  }}
+  .block-metric-value {{
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: {metric_color};
+    line-height: 1.1;
+  }}
+  .block-metric-label {{
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }}
+  /* Highlights block */
+  .block-highlight {{
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 1px solid var(--surface-border);
+    border-left: 3px solid {metric_color};
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+  }}
+  .block-highlight:last-child {{ margin-bottom: 0; }}
+  .block-highlight strong {{
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }}
+  .block-highlight p {{
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin: 0;
+  }}
+  /* Narrative block */
+  .content-block-narrative p {{
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }}
+  /* List block */
+  .block-list {{
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }}
+  .block-list li {{
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }}
+  /* Quote block */
+  .content-block-quote {{
+    position: relative;
+    padding-left: 20px;
+  }}
+  .block-quote-mark {{
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: {metric_color};
+    opacity: 0.3;
+    position: absolute;
+    top: -10px;
+    left: 0;
+  }}
+  .block-quote-text {{
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }}
+  .block-quote-attr {{
+    font-size: 12px;
+    color: var(--text-secondary);
+  }}
+  /* Comparison block */
+  .block-comparison {{
+    padding: 10px 0;
+    border-bottom: 1px solid var(--surface-border);
+  }}
+  .block-comparison:last-child {{ border-bottom: none; }}
+  .comparison-label {{
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }}
+  .comparison-values {{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }}
+  .comparison-before {{
+    font-size: 14px;
+    color: var(--text-secondary);
+  }}
+  .comparison-arrow {{
+    color: {metric_color};
+    font-weight: 700;
+  }}
+  .comparison-after {{
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: {metric_color};
+  }}
+
   .footer {{
     padding: 20px 40px;
     text-align: center;
@@ -1044,6 +1357,28 @@ def build_css(version, partner_key=None):
     .tech-card {{ padding: 10px; }}
     .tech-card h4 {{ font-size: 11px; margin-bottom: 3px; }}
     .tech-card p {{ font-size: 9px; line-height: 1.35; }}
+
+    /* Flexible page 2 print */
+    .page2-flex-col {{ padding: 14px 18px; }}
+    .page2-flex-full {{ padding: 14px 18px; }}
+    .content-block {{ margin-bottom: 12px; }}
+    .block-title {{ font-size: 12px; margin-bottom: 8px; }}
+    .block-metrics-grid {{ gap: 8px; }}
+    .block-metric {{ padding: 10px 8px; }}
+    .block-metric-value {{ font-size: 20px; }}
+    .block-metric-label {{ font-size: 9px; }}
+    .block-highlight {{ padding: 8px 12px; margin-bottom: 6px; }}
+    .block-highlight strong {{ font-size: 11px; }}
+    .block-highlight p {{ font-size: 10px; }}
+    .content-block-narrative p {{ font-size: 11px; }}
+    .block-list {{ font-size: 10px; }}
+    .block-list li {{ margin-bottom: 4px; }}
+    .block-quote-mark {{ font-size: 32px; }}
+    .block-quote-text {{ font-size: 12px; }}
+    .block-quote-attr {{ font-size: 10px; }}
+    .comparison-label {{ font-size: 9px; }}
+    .comparison-before {{ font-size: 11px; }}
+    .comparison-after {{ font-size: 14px; }}
 
     .footer {{ padding: 8px 18px; font-size: 9px; flex-shrink: 0; }}
   }}
@@ -1248,7 +1583,12 @@ def build_page1_content(version, partner_key, data):
 
 
 def build_page2(version, partner_key, data):
-    """Build page 2 if data includes it."""
+    """Build page 2 if data includes it.
+
+    Supports two formats:
+    1. New flexible format: page2.blocks[] array of content blocks
+    2. Legacy format: page2.page2_left, page2.metrics_table, page2.tech_architecture
+    """
     page2 = data.get("page2", {})
     if not page2.get("include"):
         return ""
@@ -1256,7 +1596,26 @@ def build_page2(version, partner_key, data):
     theme = PARTNER_THEMES.get(partner_key, {}) if partner_key else {}
     is_partner = version == "partner" and theme
 
-    # Titles
+    # Footer (used by both formats)
+    client_name = get_client_display_name(data)
+    project_type = data["project"].get("project_type", "")
+    now = datetime.now()
+    date_str = now.strftime("%B %Y")
+
+    if is_partner:
+        footer_text = f'{theme["footer_prefix"]} &middot; Win Wire — {client_name} {project_type} &middot; {date_str}'
+    else:
+        footer_text = f'CI&T &middot; Confidential &middot; Win Wire — {client_name} {project_type} &middot; {date_str}'
+
+    # Check for new flexible blocks format
+    if page2.get("blocks"):
+        if is_partner:
+            title = f"Deep Dive: {theme['page2_title_suffix']}"
+        else:
+            title = page2.get("title", f"Deep Dive: {h(page2.get('deep_dive_title', ''))}")
+        return build_page2_flexible(page2["blocks"], title, footer_text)
+
+    # Legacy format — render with old structure
     if is_partner:
         deep_dive_title = f"Deep Dive: {theme['page2_title_suffix']}"
         metrics_title = theme["metrics_title"]
@@ -1277,17 +1636,6 @@ def build_page2(version, partner_key, data):
 
     # Tech cards
     tech_cards = build_tech_cards(page2.get("tech_architecture", []))
-
-    # Footer
-    client_name = get_client_display_name(data)
-    project_type = data["project"].get("project_type", "")
-    now = datetime.now()
-    date_str = now.strftime("%B %Y")
-
-    if is_partner:
-        footer_text = f'{theme["footer_prefix"]} &middot; Win Wire — {client_name} {project_type} &middot; {date_str}'
-    else:
-        footer_text = f'CI&T &middot; Confidential &middot; Win Wire — {client_name} {project_type} &middot; {date_str}'
 
     return f"""
   <div class="page-break">

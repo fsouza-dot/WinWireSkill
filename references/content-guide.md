@@ -67,64 +67,92 @@ The build_html.py script expects a JSON file with this structure. All fields mar
     {"label": "Delivery Timeline", "value": "9 Months"}
   ],
 
+  // ═══════════════════════════════════════════════════════════════════════
+  // PAGE 2 — FLEXIBLE BLOCKS FORMAT (preferred)
+  // ═══════════════════════════════════════════════════════════════════════
+  // Page 2 uses content blocks that adapt to whatever compelling content
+  // exists. Only include blocks with real content — don't pad with weak content.
+  // If no compelling content, set include: false to skip page 2 entirely.
+
   "page2": {
     "include": true,
-    "deep_dive_title": "NovaPay Cloud Migration",
+    "title": "Deep Dive: NovaPay Cloud Migration",
+    "blocks": [
+      // METRICS — Big numbers that impress
+      {
+        "type": "metrics",
+        "title": "Business Impact",
+        "column": "left",
+        "items": [
+          {"value": "3.8K TPS", "label": "Transaction Throughput"},
+          {"value": "99.99%", "label": "Platform Uptime"},
+          {"value": "40%", "label": "Cost Reduction"}
+        ]
+      },
 
-    "page2_left": {
-      "type": "challenges",  // or: milestones, innovation, scale, integration, compliance, speed, phases
-      "title": "Challenges Conquered",
-      "items": [
-        {"headline": "Zero-Downtime Migration", "detail": "Migrated 2TB live database without service interruption"},
-        {"headline": "PCI Compliance", "detail": "Achieved certification in 3 weeks vs typical 3 months"},
-        {"headline": "Legacy Integration", "detail": "Connected 12 legacy systems via event-driven architecture"}
-      ]
-    },
+      // HIGHLIGHTS — Key achievements with details
+      {
+        "type": "highlights",
+        "title": "Key Achievements",
+        "column": "right",
+        "items": [
+          {"headline": "Zero-Downtime Migration", "detail": "2TB database moved without service interruption"},
+          {"headline": "PCI Compliant", "detail": "Certified in 3 weeks vs typical 3 months"}
+        ]
+      },
 
-    // Fallback if page2_left not provided:
-    "phases": [
-      {"name": "Discovery & Domain Mapping", "description": "4 weeks of event storming sessions..."},
-      {"name": "Foundation & Platform", "description": "Built the EKS-based platform..."},
-      {"name": "Core Services Migration", "description": "Migrated the 8 highest-value services..."},
-      {"name": "Optimization & Handoff", "description": "Performance tuning, chaos engineering..."}
-    ],
+      // COMPARISON — Before → After pairs
+      {
+        "type": "comparison",
+        "title": "Before & After",
+        "column": "left",
+        "items": [
+          {"label": "Deployment Frequency", "before": "Monthly", "after": "Daily"},
+          {"label": "P99 Latency", "before": "1,200ms", "after": "180ms"}
+        ]
+      },
 
-    "metrics_table": [
-      {"metric": "Transaction throughput", "before": "1,200 TPS", "after": "3,800 TPS"},
-      {"metric": "Deployment frequency", "before": "Monthly", "after": "Daily"},
-      {"metric": "Infrastructure cost / txn", "before": "$0.012", "after": "$0.004"},
-      {"metric": "P99 latency", "before": "1,200ms", "after": "180ms"},
-      {"metric": "Compliance update lead time", "before": "6-8 weeks", "after": "3-5 days"},
-      {"metric": "Platform uptime", "before": "99.5%", "after": "99.99%"}
-    ],
+      // LIST — Technologies, deliverables, phases
+      {
+        "type": "list",
+        "title": "Technologies Deployed",
+        "column": "full",
+        "style": "bullet",  // or "numbered"
+        "items": ["Amazon EKS", "Lambda", "DynamoDB", "EventBridge", "CloudWatch", "ArgoCD"]
+      },
 
-    "tech_architecture": [
+      // NARRATIVE — Prose paragraph for context
       {
-        "category": "Compute & Orchestration",
-        "description": "Amazon EKS with Karpenter for auto-scaling..."
+        "type": "narrative",
+        "title": "Our Approach",
+        "column": "right",
+        "text": "CI&T used event storming workshops to decompose the monolith into bounded contexts, then migrated services incrementally using the strangler fig pattern."
       },
+
+      // QUOTE — Additional testimonials (if not on page 1)
       {
-        "category": "Data & Storage",
-        "description": "DynamoDB for transactional data..."
-      },
-      {
-        "category": "Event Architecture",
-        "description": "EventBridge as the backbone..."
-      },
-      {
-        "category": "Security & Compliance",
-        "description": "AWS KMS for encryption..."
-      },
-      {
-        "category": "Observability",
-        "description": "CloudWatch + X-Ray for distributed tracing..."
-      },
-      {
-        "category": "CI/CD & DevOps",
-        "description": "GitOps with ArgoCD..."
+        "type": "quote",
+        "column": "full",
+        "text": "The CI&T team's deep AWS expertise made all the difference.",
+        "author": "Sarah Johnson",
+        "author_title": "VP Engineering, NovaPay"
       }
     ]
   },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // LEGACY FORMAT (still supported for backwards compatibility)
+  // ═══════════════════════════════════════════════════════════════════════
+  // If page2.blocks is not present, the system falls back to this format:
+  //
+  // "page2": {
+  //   "include": true,
+  //   "deep_dive_title": "NovaPay Cloud Migration",
+  //   "page2_left": { "type": "challenges", "title": "...", "items": [...] },
+  //   "phases": [...],           // fallback if page2_left not provided
+  //   "metrics_table": [...],    // before/after pairs
+  //   "tech_architecture": [...]  // 6 category cards
+  // }
 
   "logos": {
     "cit_logo_url": "https://upload.wikimedia.org/wikipedia/commons/5/56/CI%26T_logo.svg",

@@ -81,30 +81,33 @@ from docs, including project identity. Look for:
    - Infer from: industry, partner, project type, technologies
    - e.g., ["Cloud Migration", "Microservices", "AWS", "FinTech"]
 
-### MEDIUM (page 2 — depth)
+### MEDIUM (page 2 — flexible content blocks)
 
-9. **Page 2 left section** — Pick the BEST content type based on what makes this project impressive:
+Page 2 uses a flexible block system. Extract whatever compelling content you find and return
+it as blocks. Don't force content into rigid categories — if it doesn't exist, skip it.
 
-   | Type | When to Use | What to Extract |
-   |------|-------------|-----------------|
-   | `milestones` | Project had impressive timeline/speed | Key dates + achievements |
-   | `challenges` | Complex technical problems solved | Problem + solution pairs |
-   | `innovation` | Novel approach, first-of-its-kind | What was new + why it matters |
-   | `scale` | Impressive numbers (users, TPS, data) | Big metrics with before/after |
-   | `integration` | Connected many systems | Systems/services connected |
-   | `compliance` | Regulatory/security achievements | Certifications + timeline |
-   | `speed` | Notably fast delivery | Week-by-week milestones |
-   | `phases` | Generic fallback | Discovery, build, migrate, optimize |
+**Block types available:**
 
-   **Selection logic:** Score each type by how much compelling content you find. Pick the type with the richest, most impressive story. Sales teams want concrete achievements that help them sell — prioritize types with hard numbers and clear wins.
+| Type | When to Use | What to Extract |
+|------|-------------|-----------------|
+| `metrics` | Quantitative wins (numbers that impress) | Value + label pairs |
+| `highlights` | Key achievements, challenges solved | Headline + detail pairs |
+| `comparison` | Before/after improvements | Label + before + after |
+| `list` | Technologies, deliverables, phases | Simple string list |
+| `narrative` | Methodology, approach context | Prose paragraph |
+| `quote` | Additional testimonials | Text + author + title |
 
-10. **Before/after metrics**
-    - Any quantitative improvements: throughput, latency, cost, uptime, deployment frequency
-    - Look in: results sections, KPIs, SLAs, performance reports
+**Selection logic:**
+- Only include blocks with REAL content found in docs
+- Prioritize content that helps sales teams sell (hard numbers, clear wins)
+- 2-4 blocks is ideal; don't pad with weak content
+- If nothing compelling for page 2, return empty blocks array (page 2 will be skipped)
 
-11. **Tech architecture details**
-    - How specific services were used, design patterns, security approach
-    - Group into: Compute, Data, Events, Security, Observability, CI/CD
+**Column hints:**
+- `"column": "left"` — appears in left column
+- `"column": "right"` — appears in right column  
+- `"column": "full"` — spans full width (good for tech lists)
+- Omit column to let the system distribute evenly
 
 ## Output format
 
@@ -138,22 +141,45 @@ Return valid JSON only — no markdown, no explanation:
   "title": "Suggested title with metric",
   "subtitle": "2-3 sentence overview",
   "tags": ["Tag1", "Tag2", "..."],
-  "page2_left": {
-    "type": "challenges|milestones|innovation|scale|integration|compliance|speed|phases",
-    "title": "Section title (e.g., 'Challenges Conquered', 'Scale Achieved')",
-    "items": [
-      {"headline": "Short punchy headline", "detail": "Supporting detail or number"},
-      ...
+  "page2": {
+    "include": true,
+    "title": "Deep Dive: [Client] [Project Type]",
+    "blocks": [
+      {
+        "type": "metrics",
+        "title": "Business Impact",
+        "column": "left",
+        "items": [
+          {"value": "3.8K TPS", "label": "Transaction Throughput"},
+          {"value": "99.99%", "label": "Uptime"}
+        ]
+      },
+      {
+        "type": "highlights",
+        "title": "Key Achievements",
+        "column": "right",
+        "items": [
+          {"headline": "Zero-Downtime Migration", "detail": "2TB moved live"},
+          {"headline": "PCI Compliant", "detail": "Certified in 3 weeks"}
+        ]
+      },
+      {
+        "type": "comparison",
+        "title": "Before & After",
+        "column": "left",
+        "items": [
+          {"label": "Deployment", "before": "Monthly", "after": "Daily"},
+          {"label": "Latency", "before": "1200ms", "after": "180ms"}
+        ]
+      },
+      {
+        "type": "list",
+        "title": "Technologies",
+        "column": "full",
+        "items": ["EKS", "Lambda", "DynamoDB", "EventBridge"]
+      }
     ]
   },
-  "metrics_table": [
-    {"metric": "What measured", "before": "Old value", "after": "New value"},
-    ...
-  ],
-  "tech_architecture": [
-    {"category": "Category name", "description": "How it was used"},
-    ...
-  ],
   "missing": ["List any CRITICAL items you could not find"]
 }
 ```
