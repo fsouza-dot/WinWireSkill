@@ -514,21 +514,58 @@ preview reflects what's actually going to ship.
 
 Once every gap is filled (all Q&A is answered, all missing metrics recovered, user picked
 which versions to produce), **STOP and show the full consolidated content** in a single
-message. This is the preview the user will approve. It must include every piece of text and
-every number that will appear in the WinWire:
+message. This is the preview the user will approve.
 
-- **Project identity** — client name (or anonymized name), industry, partner(s), project type, tags
-- **Hero** — title, subtitle
-- **Challenge** — headline, body
-- **Solution** — headline, body, technology list
-- **Metrics (internal)** — all three values and labels (Services Revenue must be present)
-- **Metrics (partner)** — all three values and labels (Annual Cloud Revenue must be present), if building a partner version
-- **Quote** — text, author, title, company
-- **Context bar** — every label/value pair, for every version being produced
-- **Page 2 (if included)** — left section content, business-outcome cards, tech architecture cards
+**Format the preview to show SHARED content and VERSION-SPECIFIC angles clearly:**
 
-Format it clearly — headings and prose, not raw JSON. The user needs to be able to scan and
-point to what they want changed.
+```
+📋 CONTENT PREVIEW
+
+═══ SHARED (client-outcome focused) ═══
+
+Title: "HEINEKEN: 75% Faster Discovery Through AI-Augmented Analysis"
+
+Challenge headline: "Nine platforms. €2M maintenance. Zero visibility."
+
+Solution headline: "AI agents that read code before humans"
+
+Technologies: [Azure, Claude, Virto Commerce, SAP Hybris]
+
+Tags: [B2B Commerce, Platform Harmonization, AI-Augmented Discovery]
+
+Quote: "The AI-first approach changed how we think about discovery..."
+       — VP Digital, HEINEKEN
+
+═══ CI&T INTERNAL VERSION ═══
+
+Subtitle: "CI&T landed a €236K engagement to harmonize HEINEKEN's 
+fragmented B2B stack using AI-augmented discovery..."
+
+Challenge angle: "...created a €500K discovery engagement opportunity for CI&T."
+
+Solution angle: "CI&T deployed our AI-augmented methodology...enabled 
+premium fixed-fee pricing."
+
+Metrics: €236K Services Revenue | 69 days Deal Cycle | €700K Pipeline
+
+═══ PARTNER VERSION (Azure) ═══
+
+Subtitle: "Azure-powered AI discovery harmonized HEINEKEN's fragmented 
+B2B commerce...Platform migration unlocks $1.2M ACR."
+
+Challenge angle: "...blocked Azure migration and $1.2M in annual cloud 
+consumption potential."
+
+Solution angle: "Azure-native AI services powered the discovery...driving 
+$1.2M ACR across compute, storage, and AI services."
+
+Metrics: $1.2M ACR | 6 Azure Services | 60% Faster Discovery
+
+═══ PAGE 2 ═══
+[Left block] + [Right block] + Tech Architecture
+```
+
+The user approves BOTH versions in one gate. They can edit either angle separately.
 
 #### 🛑 Page 2 block count and variety — BLOCKING CHECK
 

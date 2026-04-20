@@ -14,20 +14,26 @@ The build_html.py script expects a JSON file with this structure. All fields mar
     "industry": "Financial Services",       // *
     "partner": "aws",                       // * one of: aws, gcp, azure
     "project_type": "Cloud Migration",      // *
-    "title": "Cloud-Native Transformation Unlocks 3x Transaction Throughput",  // *
-    "subtitle": "CI&T partnered with NovaPay to migrate their legacy payment processing platform to AWS, delivering a modern microservices architecture that tripled capacity and cut infrastructure costs by 40%.",  // *
-    "tags": ["Cloud Migration", "Microservices", "AWS", "FinTech"]  // *
+    "title": "Cloud-Native Transformation Unlocks 3x Transaction Throughput",  // * SHARED
+    "subtitle_internal": "CI&T landed a $3.2M engagement to migrate NovaPay's payment platform to AWS...",  // * for CI&T audience
+    "subtitle_partner": "AWS-powered migration tripled NovaPay's transaction capacity, unlocking $1.2M ACR...",  // * for Partner audience
+    "subtitle": "...",  // legacy fallback if version-specific not provided
+    "tags": ["Cloud Migration", "Microservices", "AWS", "FinTech"]  // * SHARED
   },
 
   "challenge": {
-    "headline": "A monolith blocking growth",    // *
-    "body": "NovaPay's 12-year-old monolithic..."  // * 2-4 sentences
+    "headline": "A monolith blocking growth",    // * SHARED
+    "body_internal": "NovaPay's 12-year-old monolith couldn't scale past 1,200 TPS — a $3.2M modernization opportunity for CI&T.",  // * CI&T angle
+    "body_partner": "NovaPay's 12-year-old monolith couldn't scale past 1,200 TPS — blocking $1.2M in AWS consumption potential.",  // * Partner angle
+    "body": "..."  // legacy fallback
   },
 
   "solution": {
-    "headline": "Event-driven microservices on AWS",  // *
-    "body": "CI&T designed and built a cloud-native...",  // * 2-4 sentences
-    "technologies": ["Amazon EKS", "AWS Lambda", "DynamoDB", "EventBridge", "Step Functions", "CloudFront"]  // *
+    "headline": "Event-driven microservices on AWS",  // * SHARED
+    "body_internal": "CI&T designed a cloud-native architecture on EKS, enabling premium pricing through our microservices expertise...",  // * CI&T angle
+    "body_partner": "AWS services powered the transformation — EKS, Lambda, DynamoDB, EventBridge driving $1.2M ACR...",  // * Partner angle
+    "body": "...",  // legacy fallback
+    "technologies": ["Amazon EKS", "AWS Lambda", "DynamoDB", "EventBridge", "Step Functions", "CloudFront"]  // * SHARED
   },
 
   "metrics_internal": {

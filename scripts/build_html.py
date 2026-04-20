@@ -2063,7 +2063,11 @@ def build_hero(version, partner_key, data):
 
     client_name = get_client_display_name(data)
     title = h(project["title"])
-    subtitle = h(project["subtitle"])
+    # Select version-specific subtitle, fall back to generic "subtitle" for backwards compat
+    if version == "partner":
+        subtitle = h(project.get("subtitle_partner", project.get("subtitle", "")))
+    else:
+        subtitle = h(project.get("subtitle_internal", project.get("subtitle", "")))
     industry = h(project["industry"])
     partner_name = theme.get("name", project.get("partner", "").upper()) if is_partner else project.get("partner", "").upper()
 
@@ -2098,8 +2102,30 @@ def build_page1_content(version, partner_key, data):
     theme = PARTNER_THEMES.get(partner_key, {}) if partner_key else {}
     is_partner = version == "partner" and theme
 
-    challenge = data["challenge"]
-    solution = data["solution"]
+    # Select version-specific body text, fall back to generic "body" for backwards compat
+    challenge_raw = data["challenge"]
+    solution_raw = data["solution"]
+
+    if is_partner:
+        challenge = {
+            "headline": challenge_raw["headline"],
+            "body": challenge_raw.get("body_partner", challenge_raw.get("body", ""))
+        }
+        solution = {
+            "headline": solution_raw["headline"],
+            "body": solution_raw.get("body_partner", solution_raw.get("body", "")),
+            "technologies": solution_raw.get("technologies", [])
+        }
+    else:
+        challenge = {
+            "headline": challenge_raw["headline"],
+            "body": challenge_raw.get("body_internal", challenge_raw.get("body", ""))
+        }
+        solution = {
+            "headline": solution_raw["headline"],
+            "body": solution_raw.get("body_internal", solution_raw.get("body", "")),
+            "technologies": solution_raw.get("technologies", [])
+        }
 
     # Solution label
     if is_partner:

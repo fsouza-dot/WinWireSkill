@@ -55,8 +55,57 @@ craft a compelling narrative by looking at everything together.
 2. Understand the full story first — what makes this win compelling?
 3. Synthesize across sources — combine the best from each
 4. Write at Deloitte/McKinsey level — executive-ready, board-presentable
-5. Ensure page 2: ONE block per side, different types
-6. Output final JSON ready for build_html.py
+5. Generate SHARED content (client-focused) + VERSION-SPECIFIC angles
+6. Ensure page 2: ONE block per side, different types
+7. Output final JSON ready for build_html.py
+
+## Two Audiences, One Approval
+
+WinWires serve two distinct audiences. Generate content for BOTH in one pass:
+
+### Audience 1: CI&T Internal
+**Readers:** CI&T sales, delivery leads, practice leaders, executives
+**They ask:** "How do I replicate this sale? What made it successful?"
+**They care about:**
+- Services revenue and deal size
+- Sales cycle and winning strategy
+- Delivery methodology and team
+- Incentive funding captured
+- Replicable patterns for other pursuits
+
+### Audience 2: Partner Sales & Executives
+**Readers:** AWS/GCP/Azure sales reps, partner managers, partner executives
+**They ask:** "How does this grow my cloud quota? Can I pitch this to others?"
+**They care about:**
+- Cloud consumption (ACR)
+- Their services adopted
+- Customer success (referenceable)
+- Replicability to other customers
+- Expansion potential
+
+### Content Structure: Shared + Version-Specific
+
+```
+SHARED (client-outcome focused — works for both):
+├── Title: Client achievement with metric
+├── Challenge headline: The client's pain
+├── Solution headline: What was built
+├── Technologies: Factual list
+├── Tags: Categorization
+├── Quote: Client voice about their outcome
+└── Tech architecture: Factual diagram
+
+VERSION-SPECIFIC ("so what does this mean for ME"):
+├── Challenge body_internal: "...opportunity for CI&T"
+├── Challenge body_partner: "...cloud consumption potential"
+├── Solution body_internal: "CI&T's methodology enabled..."
+├── Solution body_partner: "[Partner] services enabled..."
+├── Subtitle_internal: CI&T delivery angle
+├── Subtitle_partner: Partner value angle
+├── metrics_internal: Services Revenue, Funding, Deal Cycle
+├── metrics_partner: ACR, Services Adopted, Customer Outcome
+└── page2 emphasis differs per version
+```
 
 ## Writing Standard: Executive-Grade Content
 
@@ -162,44 +211,65 @@ Apply the executive-grade writing standard above. Every sentence must earn its p
 - ❌ "HEINEKEN: CI&T Helps with B2B Platform Modernization"
 - ✅ "HEINEKEN: 75% Faster Discovery Through AI-Augmented Code Analysis"
 
-**Subtitle** (2-3 sentences, ~40 words)
-- Sentence 1: What CI&T delivered + primary outcome
-- Sentence 2: Scope and scale
-- Sentence 3: Strategic significance (optional)
-- ❌ "CI&T worked with HEINEKEN to help them modernize their B2B platform using AI."
-- ✅ "CI&T deployed AI-first discovery to harmonize HEINEKEN's fragmented B2B commerce
-   stack. Nine OpCos. Six weeks per analysis cycle. 60% of business rules captured
-   before SME interviews began."
+**Subtitle** — Generate TWO versions (~40 words each):
+
+`subtitle_internal` (for CI&T audience):
+- Lead with CI&T's delivery + methodology
+- Include deal value or strategic win context
+- ✅ "CI&T landed a €236K engagement to harmonize HEINEKEN's fragmented B2B stack
+   using AI-augmented discovery. Nine OpCos scoped. Six-week cycles. 60% of
+   business rules captured before SME interviews — enabling premium pricing."
+
+`subtitle_partner` (for Partner audience):
+- Lead with partner services + cloud value
+- Include ACR or consumption drivers
+- ✅ "Azure-powered AI discovery harmonized HEINEKEN's fragmented B2B commerce
+   across nine OpCos. Six-week analysis cycles. 60% of business rules pre-captured.
+   Platform migration unlocks $1.2M ACR on Azure."
 
 **Challenge headline** (≤8 words)
 - Quantify the pain
 - ❌ "Old systems causing problems"
 - ✅ "Nine platforms. €2M maintenance. Zero visibility."
 
-**Challenge body** (2-4 sentences)
-- Sentence 1: Scale and specifics (numbers, ages, counts)
-- Sentence 2: Concrete pain points
-- Sentence 3: Business impact / strategic blocker
-- ❌ "The client had multiple legacy systems that were hard to manage."
-- ✅ "HEINEKEN operated 9 divergent SAP Hybris instances across operating companies —
-   some over a decade old. No shared catalog. No unified pricing logic. The
-   fragmentation blocked their global B2B harmonization roadmap and consumed €2M
-   annually in redundant maintenance."
+**Challenge body** — Generate TWO versions:
+
+`body_internal` (for CI&T audience):
+- Same client pain + "what this meant for CI&T"
+- End with services opportunity or competitive win angle
+- ✅ "HEINEKEN operated 9 divergent SAP Hybris instances — some over a decade old.
+   No shared catalog. No unified pricing. The fragmentation consumed €2M annually
+   and created a €500K discovery engagement opportunity for CI&T."
+
+`body_partner` (for Partner audience):
+- Same client pain + "what this meant for cloud consumption"
+- End with cloud opportunity or services adoption angle
+- ✅ "HEINEKEN operated 9 divergent SAP Hybris instances — some over a decade old.
+   No shared catalog. No unified pricing. The fragmentation blocked Azure migration
+   and $1.2M in annual cloud consumption potential."
 
 **Solution headline** (≤8 words)
 - The differentiator, not generic description
 - ❌ "A modern solution using AI"
 - ✅ "AI reads the code before humans do"
 
-**Solution body** (2-4 sentences)
-- Sentence 1: What was built/deployed (specific)
-- Sentence 2: What makes it different (the insight)
-- Sentence 3: Key technical decision or methodology
-- ❌ "CI&T built a solution using AI to analyze code and help with discovery."
-- ✅ "CI&T deployed Claude-powered agents to reverse-engineer legacy Hybris codebases,
-   extracting business rules directly from source. The AI pre-captured 60% of
-   functional requirements — transforming SME sessions from exhaustive interviews
-   into focused gap-filling. Each OpCo analysis: 6 weeks, not 4 months."
+**Solution body** — Generate TWO versions:
+
+`body_internal` (for CI&T audience):
+- What CI&T delivered + methodology + delivery excellence
+- Emphasize CI&T's differentiation and value
+- ✅ "CI&T deployed our AI-augmented discovery methodology — Claude agents
+   reverse-engineered 500K lines of Hybris code, pre-capturing 60% of business
+   rules. This cut SME sessions by 70% and enabled premium fixed-fee pricing.
+   Each OpCo: 6 weeks, not 4 months."
+
+`body_partner` (for Partner audience):
+- What [Partner] services enabled + cloud architecture + consumption drivers
+- Emphasize partner's technology value and adoption
+- ✅ "Azure-native AI services powered the discovery — Claude on Azure OpenAI
+   analyzed 500K lines of legacy code, pre-capturing 60% of business rules.
+   The modernized Virto Commerce platform runs on Azure Kubernetes Service,
+   driving $1.2M ACR across compute, storage, and AI services."
 
 **Quote** (if found)
 - Must sound like a real executive said it — not marketing copy
@@ -274,7 +344,7 @@ If a category has nothing, use a generic description based on the project type.
 
 ## Output format
 
-Return valid JSON matching the build_html.py schema:
+Return valid JSON with VERSION-SPECIFIC fields for subtitle, challenge body, and solution body:
 
 {
   "project": {
@@ -284,18 +354,21 @@ Return valid JSON matching the build_html.py schema:
     "partner": "azure",
     "project_type": "B2B Commerce Harmonization",
     "title": "HEINEKEN: AI-Powered Discovery Cuts B2B Harmonization from Months to 6 Weeks",
-    "subtitle": "CI&T landed a €236K engagement to re-engineer fragmented B2B SAP Hybris platforms...",
+    "subtitle_internal": "CI&T landed a €236K engagement to harmonize HEINEKEN's fragmented B2B stack using AI-augmented discovery. Nine OpCos scoped. Six-week cycles. Premium fixed-fee pricing enabled.",
+    "subtitle_partner": "Azure-powered AI discovery harmonized HEINEKEN's fragmented B2B commerce across nine OpCos. Six-week cycles. Platform migration unlocks $1.2M ACR on Azure.",
     "tags": ["B2B Commerce", "AI-Augmented Discovery", "Platform Harmonization"]
   },
   
   "challenge": {
     "headline": "Nine fragmented platforms, one global vision",
-    "body": "HEINEKEN operates divergent B2B e-commerce stacks across operating companies..."
+    "body_internal": "HEINEKEN operated 9 divergent SAP Hybris instances — some over a decade old. No shared catalog. No unified pricing. The fragmentation consumed €2M annually and created a €500K discovery engagement opportunity for CI&T.",
+    "body_partner": "HEINEKEN operated 9 divergent SAP Hybris instances — some over a decade old. No shared catalog. No unified pricing. The fragmentation blocked Azure migration and $1.2M in annual cloud consumption potential."
   },
   
   "solution": {
     "headline": "AI agents that read code before humans",
-    "body": "CI&T deployed an AI-enhanced discovery methodology...",
+    "body_internal": "CI&T deployed our AI-augmented discovery methodology — Claude agents reverse-engineered 500K lines of Hybris code, pre-capturing 60% of business rules. This cut SME sessions by 70% and enabled premium fixed-fee pricing.",
+    "body_partner": "Azure-native AI services powered the discovery — Claude on Azure analyzed 500K lines of legacy code, pre-capturing 60% of business rules. The modernized Virto platform runs on AKS, driving $1.2M ACR.",
     "technologies": ["SAP Hybris", "Virto Commerce", "Azure", "Anthropic Claude"]
   },
   
