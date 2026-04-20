@@ -1048,12 +1048,14 @@ def build_css(version, partner_key=None):
 
   .context-bar {{
     grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    justify-content: center;
     background: var(--text-primary);
     color: rgba(255,255,255,0.85);
   }}
   .context-item {{
+    flex: 0 1 25%;
+    max-width: 220px;
     padding: 18px 20px;
     text-align: center;
     border-right: 1px solid rgba(255,255,255,0.1);
@@ -1999,7 +2001,8 @@ def build_css(version, partner_key=None):
     .block-challenge {{ border-right: none; }}
     .metrics {{ grid-template-columns: 1fr; }}
     .metric {{ border-right: none; border-bottom: 1px solid var(--surface-border); }}
-    .context-bar {{ grid-template-columns: 1fr 1fr; }}
+    .context-bar {{ flex-wrap: wrap; }}
+    .context-item {{ flex: 0 1 50%; max-width: none; }}
     .page2-content {{ grid-template-columns: 1fr; }}
     .approach {{ border-right: none; }}
     .tech-grid {{ grid-template-columns: 1fr; }}
