@@ -262,11 +262,11 @@ Once the user provides the filled template and any supporting documents:
 
    Tell the user what you found: "Found 12 documents across 4 folders. Reading them now..."
 
-3. **Spawn an extraction agent** with the discovered file paths explicitly listed:
+3. **Spawn Phase 1: Raw Extraction Agent** (Haiku) with the discovered file paths:
 
    ```
    Agent({
-     description: "Extract WinWire content from project docs",
+     description: "Extract raw WinWire content from project docs",
      model: "haiku",
      prompt: `
        <paste full prompt from references/extraction-agent-prompt.md>
@@ -274,7 +274,6 @@ Once the user provides the filled template and any supporting documents:
        ## Files to read
        
        Read ALL of the following files using the Read tool. Do not skip any.
-       After reading all files, extract the content as specified above.
        
        - /path/to/file1.pdf
        - /path/to/file2.docx
@@ -286,13 +285,52 @@ Once the user provides the filled template and any supporting documents:
 
    **CRITICAL:** You MUST include the full list of discovered file paths at the end of the prompt.
    The extraction agent cannot discover files on its own — it can only read paths you give it.
-   If you don't include the file list, the agent will have nothing to read.
 
-   The agent reads all files, synthesizes across them, and returns structured JSON with raw
-   content pools. See `references/extraction-agent-prompt.md` for the full prompt template.
+   Phase 1 returns a raw dump of ALL potentially relevant content organized by source file:
+   - `by_source[]`: Each file's extracted content (revenue figures, challenges, solutions, etc.)
+   - `cross_file_observations`: Notes on duplicates, complements, and conflicts
+   - `best_sources`: Which file is best for each content type
+   - `gaps`: What's missing that we need to ask the user
 
-4. **Merge results.** Template values (user input) always take priority over extracted values.
-   Check the agent's `missing` array — if CRITICAL items are missing, ask the user directly.
+   See `references/extraction-agent-prompt.md` for the full prompt template and output schema.
+
+4. **Phase 2: Synthesis** (main agent handles this directly):
+
+   With the raw extraction in hand, YOU now synthesize it into the final WinWire content.
+   This gives you the advantage of seeing ALL content from ALL files at once, allowing you to:
+   
+   - Pick the best-phrased version of duplicated content
+   - Combine complementary info across files into coherent narratives
+   - Make intelligent selections (not just mechanical picking)
+   - Craft compelling headlines from notable phrases across documents
+   
+   Follow the synthesis approach in `references/synthesis-agent-prompt.md`:
+   
+   a. **Understand the full story first:**
+      - What's the core narrative? (pain → unique delivery → headline result)
+      - What's the single most impressive metric?
+      - What content is duplicated across files? (pick best version)
+      - What's missing that you need to ask the user?
+   
+   b. **Craft the narratives** in WinWire tone (confident, concrete, short sentences):
+      - Title (≤15 words, include key metric)
+      - Subtitle (2-3 sentences)
+      - Challenge headline (≤8 words) + body (2-4 sentences)
+      - Solution headline (≤8 words) + body (2-4 sentences)
+      - Technologies (deduplicated, ordered by importance)
+      - Tags (4-6 tags)
+   
+   c. **Build page 2 content** from the raw pools, respecting content limits.
+   
+   **When to spawn a Sonnet agent instead:**
+   - Very large extraction (>50KB raw content)
+   - Main agent context is already large
+   - Need fresh perspective on synthesis
+   
+   See `references/synthesis-agent-prompt.md` for the full synthesis prompt template.
+
+5. **Merge with template.** Template values (user input) always take priority over synthesized values.
+   Check the Phase 1 `gaps` array — if CRITICAL items are missing, ask the user directly.
 
 ### Step 2b: Docs-only flow (no template)
 
@@ -301,11 +339,11 @@ If the user provided documents but no template, use "full extraction mode":
 1. **Discover all documents** in the workspace folder recursively (same file types as Step 2).
    Tell the user what you found: "Found 8 documents. Reading them to extract WinWire content..."
 
-2. **Spawn the extraction agent** with `full_extraction: true` AND the file list:
+2. **Spawn Phase 1: Raw Extraction Agent** with `full_extraction: true` AND the file list:
 
    ```
    Agent({
-     description: "Extract WinWire content from project docs",
+     description: "Extract raw WinWire content from project docs",
      model: "haiku",
      prompt: `
        <extraction prompt with full_extraction: true>
@@ -326,7 +364,10 @@ If the user provided documents but no template, use "full extraction mode":
    With `full_extraction: true`, the agent also extracts project identity (client name,
    industry, partner, project type) that would normally come from the template.
 
-3. **Confirm inferred identity.** Present what the agent found:
+3. **Phase 2: Synthesis** — Same as Step 2 item 4. You (the main agent) synthesize the raw
+   extraction into polished WinWire content. See `references/synthesis-agent-prompt.md`.
+
+4. **Confirm inferred identity.** Present what you synthesized:
    > "I found this in your docs:
    > - **Client:** [name]
    > - **Industry:** [industry]
@@ -337,7 +378,7 @@ If the user provided documents but no template, use "full extraction mode":
 
    Use `AskUserQuestion` with options: "Yes, correct" / "Fix something" / "Cancel"
 
-4. **Ask for deal metrics.** These are rarely in project docs — ask directly:
+5. **Ask for deal metrics.** These are rarely in project docs — ask directly:
    > "I need a few numbers that aren't typically in project docs:
    > 1. **Services Revenue** — total CI&T contract value (e.g., $3.2M)
    > 2. **Annual Cloud Revenue (ACR)** — recurring cloud spend (e.g., $1.2M)
@@ -346,13 +387,14 @@ If the user provided documents but no template, use "full extraction mode":
    >
    > Please provide these, or type 'skip' for any you don't have."
 
-5. **Create the data structure.** Combine agent-extracted content with user-provided metrics,
+6. **Create the data structure.** Combine synthesized content with user-provided metrics,
    then proceed to Step 2c (analyze raw pools for page 2 layout).
 
 ### Step 2c: Analyze raw content pools and select page 2 layout
 
-The extraction agent returns raw content pools in `page2.raw`, not final blocks. Your job is
-to analyze these pools and select the best layout with visual variety.
+Phase 1 returns raw content pools in the `by_source[]` array — organized by source file, not
+final blocks. During Phase 2 synthesis, aggregate content across all files and select the best
+layout with visual variety.
 
 1. **Score each pool** for content quality:
 
@@ -365,19 +407,19 @@ to analyze these pools and select the best layout with visual variety.
    | Multiple items (3+) | +1 | more options |
    | Empty or single weak item | skip | — |
 
-2. **Select block types** from strongest pools:
+2. **Map raw categories to block types:**
 
-   | Pool | Best as | Fallback | Skip if |
-   |------|---------|----------|---------|
-   | `executive_insights` | `takeaway` | — | empty |
-   | `hero_metrics` | `kpi` | `metrics` | no trend/context |
-   | `metric_sets` | `metrics` | `highlights` | <2 items |
-   | `achievements` | `highlights` | `proof-points` | empty |
-   | `transformations` | `comparison` | `metrics` | no before/after |
-   | `project_phases` | `timeline` | `highlights` | <3 phases |
-   | `financial_analysis` | `roi` | skip | incomplete |
-   | `validations` | `proof-points` | `highlights` | <2 items |
-   | `risks_managed` | `risks` | skip | <2 pairs |
+   | Raw category | Best block type | Look for | Skip if |
+   |--------------|-----------------|----------|---------|
+   | `notable_phrases` | `takeaway` | Executive "so what" insights | no compelling phrase |
+   | `metrics_outcomes` (single hero) | `kpi` | One impressive metric with trend | no standout metric |
+   | `metrics_outcomes` (multiple) | `metrics` | 2-4 quantified results | <2 items |
+   | `solutions_approaches` | `highlights` | Key achievements | empty |
+   | `metrics_outcomes` (before/after) | `comparison` | Transformation data | no before AND after |
+   | `dates_timelines` | `timeline` | Project phases with outcomes | <3 phases |
+   | `revenue_figures` (ROI story) | `roi` | Investment + returns | incomplete |
+   | `quotes_testimonials` | `proof-points` | Validations, certifications | <2 items |
+   | (risk management docs) | `risks` | Risk/mitigation pairs | <2 pairs |
 
 3. **Enforce content limits** — page 2 must be scannable in 30 seconds:
 
@@ -604,18 +646,41 @@ If after reviewing the rendered outputs the user asks for content changes, loop 
 back to the content gate — update the content, re-present the consolidated preview, re-ask for
 approval, then rebuild.
 
-## Content extraction strategy
+## Content extraction strategy (2-phase architecture)
 
-The extraction agent (Haiku) handles document analysis. See `references/extraction-agent-prompt.md`
-for the full prompt template, priority tiers, and output schema.
+Content extraction uses a 2-phase architecture for better cross-file synthesis:
 
-**Priority tiers:**
-- **CRITICAL**: Revenue figures, Challenge/Solution narratives, Technologies, Client quote
-- **HIGH**: Title, Subtitle, Tags
-- **MEDIUM**: Project phases, Before/after metrics, Tech architecture
+### Phase 1: Raw Extraction (Haiku agent)
 
-The agent synthesizes across all attached documents to find the most compelling content for
-storytelling. It returns structured JSON that you merge with template data.
+A lightweight Haiku agent reads ALL files and extracts ALL potentially relevant content in
+loose categories. It does NOT make final decisions — just captures everything that MIGHT be
+useful. See `references/extraction-agent-prompt.md` for the full prompt template.
+
+**Output structure:**
+- `by_source[]`: Each file's extracted content (revenue, challenges, solutions, metrics, quotes, technologies, etc.)
+- `cross_file_observations`: Notes on duplicates, complementary info, and conflicts
+- `best_sources`: Which file is best for each content type
+- `gaps`: What's missing (quote, ACR, incentive funding, etc.)
+
+### Phase 2: Synthesis (main agent or Sonnet)
+
+You (the main agent) receive the raw extraction and synthesize it into polished WinWire content.
+This gives you the advantage of seeing ALL content from ALL files at once, allowing intelligent
+narrative construction rather than mechanical selection.
+
+**Key synthesis tasks:**
+- Understand the full story before writing anything
+- Pick the best-phrased version of duplicated content
+- Combine complementary info into coherent narratives
+- Craft compelling headlines from notable phrases
+- Build page 2 blocks respecting content limits
+
+See `references/synthesis-agent-prompt.md` for the full synthesis approach.
+
+**When to spawn Sonnet instead:**
+- Very large extraction (>50KB raw content)
+- Main agent context is already large
+- Need fresh perspective on synthesis
 
 ## Content and design references
 
