@@ -1295,9 +1295,10 @@ def build_css(version, partner_key=None):
   .page2-flex {{
     display: grid;
     gap: 0;
+    width: 100%;
   }}
   .page2-flex-two-col {{
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 50% 50%;
   }}
   .page2-flex-one-col {{
     grid-template-columns: 1fr;
@@ -1305,9 +1306,15 @@ def build_css(version, partner_key=None):
   .page2-flex-col {{
     padding: 28px 36px;
     border-bottom: 1px solid var(--surface-border);
+    min-width: 0;
+    box-sizing: border-box;
   }}
   .page2-flex-left {{
     border-right: 1px solid var(--surface-border);
+    width: 100%;
+  }}
+  .page2-flex-right {{
+    width: 100%;
   }}
   .page2-flex-full {{
     padding: 28px 36px;
