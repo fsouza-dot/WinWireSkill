@@ -604,11 +604,13 @@ def build_page2_flexible(blocks, title, footer_text, tech_architecture=None, tec
             print(f"   Right column: {right_types}")
             print(f"   Suggestions: timeline, comparison, kpi, metrics, takeaway, highlights")
 
-    # Check for page density (too many blocks)
-    if len(left_blocks) > 2 or len(right_blocks) > 2:
-        print(f"⚠️  WARNING: Page 2 is too dense.")
+    # Check for page density (too many blocks) — MAX 2 total (1 per column)
+    total_blocks = len(left_blocks) + len(right_blocks)
+    if total_blocks > 2:
+        print(f"⚠️  WARNING: Page 2 is too dense ({total_blocks} blocks).")
         print(f"   Left: {len(left_blocks)} blocks, Right: {len(right_blocks)} blocks")
-        print(f"   Recommended: MAX 2 blocks per column for a scannable layout.")
+        print(f"   Recommended: MAX 2 blocks total (1 per column) for a clean layout.")
+        print(f"   Select the 2 most impactful blocks focused on business impact.")
 
     # Check for oversized blocks
     for b in left_blocks + right_blocks:
@@ -2013,9 +2015,9 @@ def build_topbar(version, partner_key, data):
 
     cit_logo = f'<img class="topbar-logo" src="data:image/svg+xml;base64,{CIT_LOGO_B64}" alt="CI&T">'
 
-    # Partner logo — rendered on both internal and partner versions. Loaded from
-    # assets/partner-logos/ and base64-inlined; see _load_partner_logo.
-    partner_logo_html = _load_partner_logo(partner_key) if partner_key else ""
+    # Partner logo — only rendered on partner versions. Internal version shows
+    # CI&T branding only (no partner logo or color accents).
+    partner_logo_html = _load_partner_logo(partner_key) if (is_partner and partner_key) else ""
 
     # Optional client logo — resolved from URL / data URL / local file. See SKILL.md
     # "Client logo resolution flow" — by the time we get here, the skill has already
@@ -2366,15 +2368,17 @@ def main():
     if args.anonymize:
         data["project"]["anonymize"] = True
 
-    # Partner logo is shown on both internal and partner versions. For the internal
-    # version, the --partner flag is optional — if omitted, fall back to what's in
-    # the data (project.partner). This way a single JSON drives both versions and
-    # the partner logo appears in the topbar regardless.
+    # Partner logo/styling only appears on partner versions. Internal version is
+    # pure CI&T branding — no partner logo or color accents.
     partner_key = args.partner
-    if not partner_key:
+    if args.version == "partner" and not partner_key:
+        # Fall back to what's in the data for partner versions
         data_partner = (data.get("project", {}).get("partner") or "").strip().lower()
         if data_partner in _PARTNER_LOGO_FILES:
             partner_key = data_partner
+    elif args.version == "internal":
+        # Internal version: no partner branding even if partner is in data
+        partner_key = None
 
     html = build_html(data, version=args.version, partner_key=partner_key)
 

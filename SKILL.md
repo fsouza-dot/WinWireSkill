@@ -425,14 +425,14 @@ layout with visual variety.
 
    | Constraint | Limit |
    |------------|-------|
-   | Blocks per column | MAX 2 |
+   | **Total blocks** | **MAX 2** (1 per column) |
    | Timeline items | MAX 4 |
    | Comparison items | MAX 2 (even grid) |
    | Takeaway bullets | MAX 3, each ≤8 words |
    | Highlights items | MAX 3 |
    | Any item detail | ≤10 words |
 
-   If raw pools have more items than limits allow, **select the best ones, not all**.
+   **Choose the 2 most impactful blocks**, prioritizing business impact metrics.
    A dense wall of text looks amateur. White space is professional.
 
 4. **Assign columns ensuring variety**:
@@ -444,31 +444,28 @@ layout with visual variety.
 5. **Present layout recommendation with alternatives** via `AskUserQuestion`:
 
    ```
-   📊 Recommended page 2 layout:
+   📊 Recommended page 2 layout (2 blocks total, 1 per column):
    
    LEFT COLUMN:
-   ├─ takeaway: "AI cuts discovery from months to weeks"
-   │   • 60% context pre-captured
-   │   • 4 parallel tracks
-   │   • 9 OpCos unified
-   └─ timeline: 4 project phases
-       Discovery → Feature Gap → Migration Pilot → Augmentation
+   └─ takeaway: "AI cuts discovery from months to weeks"
+       • 60% context pre-captured
+       • 6-week cycles vs months
+       • SME load cut 70%
    
    RIGHT COLUMN:
-   ├─ kpi: "60%" SME Context Pre-Captured (↓40% interview load)
-   └─ comparison: 2 transformations
-       Discovery: Months → 6-8 weeks (↓75%)
-       SME Load: 12 sessions → 4-5 (↓60%)
+   └─ comparison: Before/After Transformation
+       Discovery: Months → 6 weeks (↓75%)
+       SME Load: Multi-day → 4-8 hours (↓70%)
    
-   📦 Available alternatives (content found but not used):
-   • highlights: 2 achievements with impact badges
+   📦 Available alternatives (swap one block for another):
+   • kpi: "60%" SME Context Pre-Captured
+   • timeline: 4 project phases
+   • highlights: 2 achievements
    • proof-points: 3 validations
-   • risks: 2 risk/mitigation pairs
    
    Options:
    - **Use recommended layout** ✓
    - **Swap a block** (tell me which)
-   - **Add more blocks** (pick from alternatives)
    - **Skip page 2** (one-pager only)
    ```
 

@@ -124,12 +124,18 @@ Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits:
 
 | Constraint | Limit |
 |------------|-------|
-| Blocks per column | MAX 2 |
+| **Total blocks** | **MAX 2** (1 per column) |
 | Timeline items | MAX 4 |
 | Comparison items | MAX 2 |
 | Takeaway bullets | MAX 3, each ≤8 words |
 | Highlights items | MAX 3 |
 | Any item detail | ≤10 words |
+
+**Selection priority — focus on BUSINESS IMPACT:**
+1. Pick the 2 most impactful block types from what you found
+2. Prioritize blocks with concrete numbers showing business value
+3. `comparison` (before/after) and `kpi` (hero metric) are strongest for impact
+4. `takeaway` is good for executive summary if you have compelling insight
 
 **Column assignments (ensure variety):**
 - LEFT: `takeaway`, `timeline`, `roi`, or `risks`
@@ -137,14 +143,14 @@ Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits:
 - NEVER same block type on both sides
 
 **Block selection logic:**
-- `takeaway`: Executive "so what" — always include if you can write a compelling one
-- `kpi`: Single hero metric with trend — use if you have an impressive number
+- `takeaway`: Executive "so what" — compelling insight with 3 bullet proof points
+- `kpi`: Single hero metric with trend — your most impressive number
+- `comparison`: Before/after — strongest when you have concrete transformation data
 - `timeline`: Project phases — use if 3-4 clear phases with outcomes
-- `comparison`: Before/after — use if you have concrete before AND after values
-- `metrics`: Multiple numbers — use if 2-4 strong metrics
-- `highlights`: Achievements — use if concrete wins with detail
-- `proof-points`: Evidence — use if certifications, validations, awards
-- `risks`: Risk management — use if documented risk/mitigation pairs
+- `metrics`: Multiple numbers — use if you have 2-4 strong metrics
+- `highlights`: Achievements — concrete wins with detail
+- `proof-points`: Evidence — certifications, validations, awards
+- `risks`: Risk management — documented risk/mitigation pairs
 
 **Synthesize, don't just copy:**
 - Combine related content from multiple files
@@ -241,24 +247,6 @@ Return valid JSON matching the build_html.py schema:
         "bullets": ["50-60% rules pre-captured", "6-week cycles", "SME load cut 70%"]
       },
       {
-        "type": "timeline",
-        "column": "left",
-        "title": "6-Week Discovery",
-        "items": [
-          {"date": "Weeks 1-2", "title": "AI Preparation", "detail": "Ingest artifacts"},
-          {"date": "Weeks 3-4", "title": "SME Sessions", "detail": "Fill gaps only"},
-          {"date": "Weeks 5-6", "title": "Delivery", "detail": "Feature map + plan"}
-        ]
-      },
-      {
-        "type": "kpi",
-        "column": "right",
-        "value": "50-60%",
-        "label": "Business Rules Pre-Captured",
-        "trend": "Before SME interviews",
-        "context": "AI agents reverse-engineer from code"
-      },
-      {
         "type": "comparison",
         "column": "right",
         "title": "Discovery Transformation",
@@ -289,7 +277,8 @@ Return valid JSON matching the build_html.py schema:
 
 - [ ] Title includes a metric
 - [ ] Challenge and solution are 2-4 sentences each, concrete
-- [ ] Page 2 has MAX 2 blocks per column
+- [ ] Page 2 has exactly 2 blocks total (1 per column)
+- [ ] Blocks chosen for maximum business impact
 - [ ] Left and right columns use DIFFERENT block types
 - [ ] Timeline has ≤4 items, each detail ≤10 words
 - [ ] Comparison has ≤2 items (even grid)
