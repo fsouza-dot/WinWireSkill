@@ -580,6 +580,9 @@ def build_page2_flexible(blocks, title, footer_text, tech_architecture=None, tec
     if not blocks and not tech_architecture:
         return ""
 
+    # Filter out non-dict items (sometimes blocks contains strings by mistake)
+    blocks = [b for b in blocks if isinstance(b, dict)]
+
     # Separate blocks by column (only left and right - no full width blocks)
     left_blocks = [b for b in blocks if b.get("column") == "left"]
     right_blocks = [b for b in blocks if b.get("column") == "right"]
