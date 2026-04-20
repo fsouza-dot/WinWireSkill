@@ -1199,8 +1199,8 @@ def build_css(version, partner_key=None):
   .ext-metrics h3 {{ font-size: 16px; font-weight: 600; margin-bottom: 16px; }}
 
   .outcome-cards {{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 12px;
   }}
   .outcome-card {{
@@ -1341,10 +1341,10 @@ def build_css(version, partner_key=None):
     display: inline-block;
   }}
 
-  /* Metrics block — matches outcome-card style */
+  /* Metrics block — cards stack vertically */
   .block-metrics-grid {{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 12px;
   }}
   .block-metric {{
@@ -1482,10 +1482,10 @@ def build_css(version, partner_key=None):
     color: var(--text-primary);
   }}
 
-  /* Comparison block — before/after cards */
+  /* Comparison block — cards stack vertically */
   .block-comparisons {{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 12px;
   }}
   .block-comparison {{
