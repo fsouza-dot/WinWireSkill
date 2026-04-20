@@ -54,9 +54,85 @@ craft a compelling narrative by looking at everything together.
 1. Read ALL the raw extraction before writing anything
 2. Understand the full story first — what makes this win compelling?
 3. Synthesize across sources — combine the best from each
-4. Write coherent narratives, not bullet dumps
-5. Ensure page 2 variety: MAX 2 blocks/column, different types per side
+4. Write at Deloitte/McKinsey level — executive-ready, board-presentable
+5. Ensure page 2: ONE block per side, different types
 6. Output final JSON ready for build_html.py
+
+## Writing Standard: Executive-Grade Content
+
+This WinWire must read like a McKinsey case study or Deloitte client success story.
+Not internal documentation. Not marketing fluff. Executive-ready content that could
+be presented to a board.
+
+### Core Principles
+
+| Principle | Wrong | Right |
+|-----------|-------|-------|
+| **Outcome first** | "CI&T built a platform that reduced costs" | "40% cost reduction through platform consolidation" |
+| **Quantify everything** | "Significantly faster" | "6 weeks vs. 4 months (75% acceleration)" |
+| **No hype words** | "Amazing transformation" | "Transformation" — let numbers speak |
+| **Active voice** | "The solution was implemented" | "CI&T implemented the solution" |
+| **Client as hero** | "CI&T delivered great results" | "[Client] achieved 3x throughput" |
+| **Precise vocabulary** | "Made things better" | "Optimized", "Accelerated", "Enabled" |
+| **Context for metrics** | "40% reduction" | "40% reduction (vs. 15% industry benchmark)" |
+| **Explicit timeframes** | "Quickly delivered" | "Delivered in 6 weeks" |
+
+### Banned Words & Phrases
+
+Never use these — they signal amateur content:
+- amazing, incredible, awesome, exciting, great
+- significant, substantial (use actual numbers)
+- very, really, quite, somewhat, generally
+- helped, worked on, dealt with, handled
+- cutting-edge, state-of-the-art, best-in-class (empty superlatives)
+- leverage (overused — use "use" or be specific)
+- synergy, holistic, robust (consultant clichés without substance)
+
+### Required Patterns
+
+**Every metric needs context:**
+- ❌ "40% cost reduction"
+- ✅ "40% cost reduction ($2.1M annually)"
+- ✅ "40% cost reduction (vs. 15% industry average)"
+
+**Before/after always paired:**
+- ❌ "Reduced processing time"
+- ✅ "Processing time: 4 months → 6 weeks"
+
+**Timeframes explicit:**
+- ❌ "Rapid implementation"
+- ✅ "Implemented in 6 weeks"
+- ✅ "Live within Q1 2026"
+
+**Specificity over generality:**
+- ❌ "Multiple systems"
+- ✅ "9 legacy Hybris instances across 4 regions"
+
+### Sentence Structure
+
+- **Short sentences.** 15-20 words max. One idea per sentence.
+- **Active voice.** Subject-verb-object. "CI&T deployed" not "was deployed by CI&T."
+- **Front-load the point.** Lead with the conclusion, then support it.
+- **Parallel structure.** Lists use consistent grammar: all verbs, all nouns, all phrases.
+
+### Challenge Section Formula
+
+Pattern: [Scale of problem] + [Concrete pain points] + [Business impact]
+
+❌ "The client had old systems that were difficult to manage and causing problems."
+
+✅ "Nine divergent B2B platforms. €2M annual maintenance. Zero cross-OpCo visibility.
+   HEINEKEN's fragmented commerce stack blocked their global harmonization strategy."
+
+### Solution Section Formula
+
+Pattern: [What was built] + [How it's different] + [Key technical insight]
+
+❌ "CI&T built a solution using AI to help with the discovery process."
+
+✅ "AI-first discovery methodology. Claude agents analyzed 500K lines of legacy code,
+   capturing 60% of business rules before the first SME interview. Result: 6-week
+   cycles instead of 4-month marathons."
 
 ## Step 1: Understand the full story
 
@@ -78,45 +154,69 @@ Before writing anything, answer these questions:
 
 ## Step 2: Craft the narratives
 
-Write these in WinWire tone: confident, concrete, short sentences.
+Apply the executive-grade writing standard above. Every sentence must earn its place.
 
 **Title** (≤15 words)
-- Include the most impressive metric
-- Pattern: "[Client]: [Metric-driven outcome statement]"
-- Example: "HEINEKEN: AI-Powered Discovery Cuts B2B Harmonization from Months to 6 Weeks"
+- Lead with client name, then metric-driven outcome
+- Pattern: "[CLIENT]: [Quantified outcome] + [How]"
+- ❌ "HEINEKEN: CI&T Helps with B2B Platform Modernization"
+- ✅ "HEINEKEN: 75% Faster Discovery Through AI-Augmented Code Analysis"
 
-**Subtitle** (2-3 sentences)
-- What CI&T did + key result + scope
-- Make it scannable
+**Subtitle** (2-3 sentences, ~40 words)
+- Sentence 1: What CI&T delivered + primary outcome
+- Sentence 2: Scope and scale
+- Sentence 3: Strategic significance (optional)
+- ❌ "CI&T worked with HEINEKEN to help them modernize their B2B platform using AI."
+- ✅ "CI&T deployed AI-first discovery to harmonize HEINEKEN's fragmented B2B commerce
+   stack. Nine OpCos. Six weeks per analysis cycle. 60% of business rules captured
+   before SME interviews began."
 
 **Challenge headline** (≤8 words)
-- The pain in punchy form
-- Example: "Nine fragmented platforms, one global vision"
+- Quantify the pain
+- ❌ "Old systems causing problems"
+- ✅ "Nine platforms. €2M maintenance. Zero visibility."
 
 **Challenge body** (2-4 sentences)
-- Concrete details: system age, scale, specific problems
-- Business impact of the pain
+- Sentence 1: Scale and specifics (numbers, ages, counts)
+- Sentence 2: Concrete pain points
+- Sentence 3: Business impact / strategic blocker
+- ❌ "The client had multiple legacy systems that were hard to manage."
+- ✅ "HEINEKEN operated 9 divergent SAP Hybris instances across operating companies —
+   some over a decade old. No shared catalog. No unified pricing logic. The
+   fragmentation blocked their global B2B harmonization roadmap and consumed €2M
+   annually in redundant maintenance."
 
 **Solution headline** (≤8 words)
-- What CI&T built/delivered
-- Example: "AI agents that read code before humans"
+- The differentiator, not generic description
+- ❌ "A modern solution using AI"
+- ✅ "AI reads the code before humans do"
 
 **Solution body** (2-4 sentences)
-- Architecture, methodology, key decisions
-- What makes this technically interesting
+- Sentence 1: What was built/deployed (specific)
+- Sentence 2: What makes it different (the insight)
+- Sentence 3: Key technical decision or methodology
+- ❌ "CI&T built a solution using AI to analyze code and help with discovery."
+- ✅ "CI&T deployed Claude-powered agents to reverse-engineer legacy Hybris codebases,
+   extracting business rules directly from source. The AI pre-captured 60% of
+   functional requirements — transforming SME sessions from exhaustive interviews
+   into focused gap-filling. Each OpCo analysis: 6 weeks, not 4 months."
 
 **Quote** (if found)
-- Best testimonial from extraction
-- Include speaker, title, company
+- Must sound like a real executive said it — not marketing copy
+- Include specific outcomes mentioned
 - If none found, flag as missing
+- ❌ "CI&T was an amazing partner and we loved working with them!"
+- ✅ "The AI-first approach changed how we think about discovery. We went from
+   dreading the SME marathon to actually enjoying focused sessions." — VP Digital, HEINEKEN
 
 **Technologies**
-- Deduplicated list from all sources
-- Order by importance/relevance
+- Deduplicated, ordered by strategic importance
+- Lead with differentiators, not commodities
 
 **Tags** (4-6)
-- Industry, partner, project type, key tech
-- Example: ["B2B Commerce", "AI-Augmented Discovery", "Hybris → Virto"]
+- Pattern: [Industry], [Transformation type], [Key differentiator], [Tech]
+- ❌ ["Technology", "Digital", "Cloud", "AI"]
+- ✅ ["B2B Commerce", "Platform Harmonization", "AI-Augmented Discovery", "Hybris → Virto"]
 
 ## Step 3: Build page 2 content
 

@@ -699,15 +699,44 @@ Before generating any HTML, read these reference files for detailed guidance:
   Partners get color accents (topbar tag pill, metric values, tech card headers) and a
   co-branded logo bar — not a full visual overhaul.
 
-## Writing tone for narratives you draft
+## Writing Standard: Executive-Grade Content
 
-When writing challenge/solution blocks, titles, or subtitles from user highlights and docs:
+WinWires must read like McKinsey case studies or Deloitte client success stories — 
+executive-ready, board-presentable. Not internal documentation. Not marketing fluff.
 
-- **Confident but not boastful.** State results with numbers, let them speak.
-- **Concrete over abstract.** "Tripled transaction throughput" not "significantly improved performance."
-- **Short sentences in challenge/solution blocks.** These are scanned, not read deeply.
-- **Quote should feel authentic.** If the user provides one, use it as-is. Never fabricate quotes.
-- **Title should include a key metric.** "3x Transaction Throughput" or "40% Cost Reduction."
+See `references/synthesis-agent-prompt.md` for the complete writing guide. Key principles:
+
+### Do This
+
+- **Outcome first.** "40% cost reduction through platform consolidation"
+- **Quantify everything.** "6 weeks vs. 4 months (75% acceleration)"
+- **Client as hero.** "[Client] achieved 3x throughput"
+- **Context for metrics.** "40% reduction ($2.1M annually)"
+- **Explicit timeframes.** "Delivered in 6 weeks"
+- **Short sentences.** 15-20 words max. One idea per sentence.
+- **Active voice.** "CI&T deployed" not "was deployed by CI&T"
+
+### Never Do This
+
+- **Banned words:** amazing, incredible, significant, very, really, helped, worked on,
+  cutting-edge, state-of-the-art, leverage, synergy, holistic, robust
+- **Vague claims:** "Significantly improved" → use actual numbers
+- **Passive voice:** "The solution was implemented" → "CI&T implemented"
+- **Generic descriptions:** "Multiple systems" → "9 legacy Hybris instances across 4 regions"
+
+### Formula: Challenge Section
+
+[Scale] + [Pain points] + [Business impact]
+
+❌ "The client had old systems that were difficult to manage."
+✅ "Nine divergent platforms. €2M annual maintenance. Zero cross-OpCo visibility."
+
+### Formula: Solution Section
+
+[What was built] + [What's different] + [Key insight]
+
+❌ "CI&T built a solution using AI to help with discovery."
+✅ "AI-first discovery captured 60% of business rules before the first SME interview."
 
 ## Script dependencies
 
