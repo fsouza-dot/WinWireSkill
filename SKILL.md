@@ -425,7 +425,7 @@ layout with visual variety.
 
    | Constraint | Limit |
    |------------|-------|
-   | **Total blocks** | **MAX 2** (1 per column) |
+   | **Total blocks** | **ONE per side** (2 total) |
    | Timeline items | MAX 4 |
    | Comparison items | MAX 2 (even grid) |
    | Takeaway bullets | MAX 3, each ≤8 words |
@@ -435,16 +435,16 @@ layout with visual variety.
    **Choose the 2 most impactful blocks**, prioritizing business impact metrics.
    A dense wall of text looks amateur. White space is professional.
 
-4. **Assign ONE block per column** (2 blocks total):
+4. **ONE block per side** — this is non-negotiable:
 
-   - **Left column — pick ONE:** `takeaway` (preferred), `timeline`, `roi`, or `risks`
-   - **Right column — pick ONE:** `comparison` (preferred), `kpi`, `metrics`, or `proof-points`
-   - **HARD RULE:** Exactly 2 blocks total. No more.
+   - **Left side:** pick ONE from `takeaway`, `timeline`, `roi`, or `risks`
+   - **Right side:** pick ONE from `comparison`, `kpi`, `metrics`, or `proof-points`
+   - **NO EXCEPTIONS.** One block left, one block right. That's it.
 
 5. **Present layout recommendation with alternatives** via `AskUserQuestion`:
 
    ```
-   📊 Recommended page 2 layout (2 blocks total, 1 per column):
+   📊 Recommended page 2 layout (ONE block per side):
    
    LEFT COLUMN:
    └─ takeaway: "AI cuts discovery from months to weeks"
@@ -533,7 +533,7 @@ point to what they want changed.
 #### 🛑 Page 2 block count and variety — BLOCKING CHECK
 
 Before showing the approval question, verify:
-1. **Exactly 2 blocks total** (1 per column) — no more
+1. **ONE block per side** — no more, no exceptions
 2. **Different block types** on each side
 
 Violations must be resolved with the user first — do not proceed to approval.

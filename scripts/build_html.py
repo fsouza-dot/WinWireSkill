@@ -604,13 +604,11 @@ def build_page2_flexible(blocks, title, footer_text, tech_architecture=None, tec
             print(f"   Right column: {right_types}")
             print(f"   Suggestions: timeline, comparison, kpi, metrics, takeaway, highlights")
 
-    # Check for page density (too many blocks) — MAX 2 total (1 per column)
-    total_blocks = len(left_blocks) + len(right_blocks)
-    if total_blocks > 2:
-        print(f"⚠️  WARNING: Page 2 is too dense ({total_blocks} blocks).")
+    # Check for page density — ONE block per side, no exceptions
+    if len(left_blocks) > 1 or len(right_blocks) > 1:
+        print(f"⚠️  WARNING: Page 2 has too many blocks.")
         print(f"   Left: {len(left_blocks)} blocks, Right: {len(right_blocks)} blocks")
-        print(f"   Recommended: MAX 2 blocks total (1 per column) for a clean layout.")
-        print(f"   Select the 2 most impactful blocks focused on business impact.")
+        print(f"   RULE: ONE block per side. Pick the most impactful for each side.")
 
     # Check for oversized blocks
     for b in left_blocks + right_blocks:

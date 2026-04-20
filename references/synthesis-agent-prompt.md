@@ -124,7 +124,7 @@ Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits:
 
 | Constraint | Limit |
 |------------|-------|
-| **Total blocks** | **MAX 2** (1 per column) |
+| **Total blocks** | **ONE per side** (2 total) |
 | Timeline items | MAX 4 |
 | Comparison items | MAX 2 |
 | Takeaway bullets | MAX 3, each ≤8 words |
@@ -137,10 +137,10 @@ Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits:
 3. `comparison` (before/after) and `kpi` (hero metric) are strongest for impact
 4. `takeaway` is good for executive summary if you have compelling insight
 
-**Column assignments (exactly 2 blocks total):**
-- LEFT — pick ONE: `takeaway` (preferred), `timeline`, `roi`, or `risks`
-- RIGHT — pick ONE: `comparison` (preferred), `kpi`, `metrics`, or `proof-points`
-- HARD RULE: Exactly 2 blocks total. No more.
+**ONE block per side — non-negotiable:**
+- LEFT side: pick ONE from `takeaway`, `timeline`, `roi`, or `risks`
+- RIGHT side: pick ONE from `comparison`, `kpi`, `metrics`, or `proof-points`
+- NO EXCEPTIONS. One block left, one block right. That's it.
 
 **Block selection logic:**
 - `takeaway`: Executive "so what" — compelling insight with 3 bullet proof points
@@ -277,7 +277,7 @@ Return valid JSON matching the build_html.py schema:
 
 - [ ] Title includes a metric
 - [ ] Challenge and solution are 2-4 sentences each, concrete
-- [ ] Page 2 has exactly 2 blocks total (1 per column)
+- [ ] Page 2 has ONE block per side (left and right)
 - [ ] Blocks chosen for maximum business impact
 - [ ] Left and right columns use DIFFERENT block types
 - [ ] Timeline has ≤4 items, each detail ≤10 words
