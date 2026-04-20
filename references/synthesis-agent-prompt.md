@@ -137,10 +137,10 @@ Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits:
 3. `comparison` (before/after) and `kpi` (hero metric) are strongest for impact
 4. `takeaway` is good for executive summary if you have compelling insight
 
-**Column assignments (ensure variety):**
-- LEFT: `takeaway`, `timeline`, `roi`, or `risks`
-- RIGHT: `kpi`, `comparison`, `metrics`, or `proof-points`
-- NEVER same block type on both sides
+**Column assignments (exactly 2 blocks total):**
+- LEFT — pick ONE: `takeaway` (preferred), `timeline`, `roi`, or `risks`
+- RIGHT — pick ONE: `comparison` (preferred), `kpi`, `metrics`, or `proof-points`
+- HARD RULE: Exactly 2 blocks total. No more.
 
 **Block selection logic:**
 - `takeaway`: Executive "so what" — compelling insight with 3 bullet proof points

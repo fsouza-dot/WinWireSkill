@@ -435,11 +435,11 @@ layout with visual variety.
    **Choose the 2 most impactful blocks**, prioritizing business impact metrics.
    A dense wall of text looks amateur. White space is professional.
 
-4. **Assign columns ensuring variety**:
+4. **Assign ONE block per column** (2 blocks total):
 
-   - **Left column priority:** `takeaway`, `timeline`, `roi`, `risks`
-   - **Right column priority:** `kpi`, `comparison`, `metrics`, `proof-points`
-   - **HARD RULE:** Never same primary block type on both sides
+   - **Left column — pick ONE:** `takeaway` (preferred), `timeline`, `roi`, or `risks`
+   - **Right column — pick ONE:** `comparison` (preferred), `kpi`, `metrics`, or `proof-points`
+   - **HARD RULE:** Exactly 2 blocks total. No more.
 
 5. **Present layout recommendation with alternatives** via `AskUserQuestion`:
 
@@ -530,37 +530,36 @@ every number that will appear in the WinWire:
 Format it clearly — headings and prose, not raw JSON. The user needs to be able to scan and
 point to what they want changed.
 
-#### 🛑 Page 2 block variety — BLOCKING CHECK
+#### 🛑 Page 2 block count and variety — BLOCKING CHECK
 
-Before showing the approval question, check if left and right columns use the same primary
-block type. **If they do, you MUST resolve this with the user first — do not proceed to approval.**
+Before showing the approval question, verify:
+1. **Exactly 2 blocks total** (1 per column) — no more
+2. **Different block types** on each side
 
-Same block type on both sides = amateur document. This is a quality gate.
+Violations must be resolved with the user first — do not proceed to approval.
 
-When block variety is violated:
+When violations occur:
 
 1. **Flag the problem explicitly:**
-   > "⚠️ Page 2 needs adjustment: both columns use 'highlights' blocks, which creates visual
-   > monotony and looks unprofessional."
+   > "⚠️ Page 2 needs adjustment: [too many blocks / same block type on both sides]"
 
-2. **Offer concrete alternatives:**
-   > "I recommend restructuring for visual variety:
-   > - **Left column:** `takeaway` (executive insight) + `timeline` (project phases)
-   > - **Right column:** `kpi` (hero metric) + `comparison` (before/after transformation)
+2. **Offer the recommended layout (exactly 2 blocks):**
+   > "I recommend:
+   > - **Left column:** `takeaway` — executive insight with 3 key bullets
+   > - **Right column:** `comparison` — before/after transformation showing business impact
    >
-   > This gives you: callout box, timeline dots, big number, transformation arrows — four
-   > distinct visual patterns instead of two identical lists."
+   > This gives you two distinct visual patterns focused on business impact."
 
 3. **Ask the user to choose** via `AskUserQuestion`:
    - Question: "How should I fix the page 2 layout?"
    - Options:
-     - **Apply suggested restructure** (Recommended)
-     - **Keep current layout anyway** (not recommended)
-     - **Let me specify the block types**
+     - **Use recommended layout** (2 blocks total)
+     - **Let me specify the 2 block types**
+     - **Skip page 2** (one-pager only)
 
 4. **Only after the user responds**, proceed to the content approval question.
 
-**Do NOT bundle this into a single "notes" section and continue.** Block variety must be
+**Do NOT bundle this into a single "notes" section and continue.** Layout must be
 resolved as a separate interaction before content approval.
 
 #### Content approval question
