@@ -56,8 +56,11 @@ craft a compelling narrative by looking at everything together.
 3. Synthesize across sources — combine the best from each
 4. Write at Deloitte/McKinsey level — executive-ready, board-presentable
 5. Generate SHARED content (client-focused) + VERSION-SPECIFIC angles
-6. Ensure page 2: ONE block per side, different types
-7. Output final JSON ready for build_html.py
+6. Page 2: produce **6 candidate pitches per side** (not the final blocks). The user picks
+   which one ships on each side; left and right pull from disjoint block-type sets so any
+   pair the user picks will have different types.
+7. Output JSON with `page2.candidates.left[]`, `page2.candidates.right[]`, and an empty
+   `page2.blocks[]` (the main agent fills `blocks` after the user picks)
 
 ## Two Audiences, One Approval
 
@@ -288,31 +291,46 @@ Apply the executive-grade writing standard above. Every sentence must earn its p
 - ❌ ["Technology", "Digital", "Cloud", "AI"]
 - ✅ ["B2B Commerce", "Platform Harmonization", "AI-Augmented Discovery", "Hybris → Virto"]
 
-## Step 3: Build page 2 content
+## Step 3: Build page 2 candidates (the user picks the final blocks)
 
-Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits:
+Page 2 ships ONE block per side. **You do not pick the final blocks — the user does.**
+Your job is to produce **6 candidate "executive success pitches" per side** so the user
+has real choices, not pre-decided defaults.
+
+Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits to every candidate:
 
 | Constraint | Limit |
 |------------|-------|
-| **Total blocks** | **ONE per side** (2 total) |
+| **Final blocks rendered** | **ONE per side** (user-picked) |
+| **Candidates produced** | **6 per side** (or as many as the source material supports, min 3) |
 | Timeline items | MAX 4 |
 | Comparison items | MAX 2 |
 | Takeaway bullets | MAX 3, each ≤8 words |
 | Highlights items | MAX 3 |
 | Any item detail | ≤10 words |
 
-**Selection priority — focus on BUSINESS IMPACT:**
-1. Pick the 2 most impactful block types from what you found
-2. Prioritize blocks with concrete numbers showing business value
-3. `comparison` (before/after) and `kpi` (hero metric) are strongest for impact
-4. `takeaway` is good for executive summary if you have compelling insight
+**Eligible block types per side (disjoint sets):**
+- LEFT side candidates: `takeaway`, `timeline`, `roi`, `risks`
+- RIGHT side candidates: `comparison`, `kpi`, `metrics`, `proof-points`
 
-**ONE block per side — non-negotiable:**
-- LEFT side: pick ONE from `takeaway`, `timeline`, `roi`, or `risks`
-- RIGHT side: pick ONE from `comparison`, `kpi`, `metrics`, or `proof-points`
-- NO EXCEPTIONS. One block left, one block right. That's it.
+The two sets do not overlap, so whichever pair the user picks automatically gives the
+page two different block types.
 
-**Block selection logic:**
+**How to craft 6 candidates per side:**
+
+1. **Vary by block type AND by angle.** Cover at least 2 different block types from the
+   eligible set on each side. Within a type, vary the *argument* — different metric
+   framing, different audience hook (CFO vs. CTO vs. partner exec), different narrative
+   (cost story, speed story, capability story, risk story).
+2. **Each candidate is a fully-formed pitch**, not a stub. Apply the executive-grade
+   writing standard: concrete numbers, no banned words, active voice, client as hero.
+3. **Score the source pools first** (concrete numbers +2, before/after data +2, executive
+   insight +2, dates/phases +1, multiple items +1) and lead with the highest-scoring
+   angles.
+4. **No filler.** If genuinely fewer than 6 strong candidates exist on a side, return
+   what you have (minimum 3) and add a `notes` field explaining why.
+
+**Block type guidance:**
 - `takeaway`: Executive "so what" — compelling insight with 3 bullet proof points
 - `kpi`: Single hero metric with trend — your most impressive number
 - `comparison`: Before/after — strongest when you have concrete transformation data
@@ -320,6 +338,7 @@ Page 2 must be SCANNABLE IN 30 SECONDS. Apply these hard limits:
 - `metrics`: Multiple numbers — use if you have 2-4 strong metrics
 - `highlights`: Achievements — concrete wins with detail
 - `proof-points`: Evidence — certifications, validations, awards
+- `roi`: Investment vs. return — concrete inputs and outputs
 - `risks`: Risk management — documented risk/mitigation pairs
 
 **Synthesize, don't just copy:**
@@ -412,23 +431,101 @@ Return valid JSON with VERSION-SPECIFIC fields for subtitle, challenge body, and
   "page2": {
     "include": true,
     "title": "Deep Dive: HEINEKEN B2B Commerce Harmonization",
-    "blocks": [
-      {
-        "type": "takeaway",
-        "column": "left",
-        "headline": "AI rewrites the discovery playbook",
-        "bullets": ["50-60% rules pre-captured", "6-week cycles", "SME load cut 70%"]
-      },
-      {
-        "type": "comparison",
-        "column": "right",
-        "title": "Discovery Transformation",
-        "items": [
-          {"label": "Duration", "before": "Months", "after": "6 weeks", "change": "↓75%"},
-          {"label": "SME Load", "before": "Multi-day", "after": "4-8 hours", "change": "↓70%"}
-        ]
-      }
-    ],
+    "blocks": [],
+    "candidates": {
+      "left": [
+        {
+          "type": "takeaway",
+          "headline": "AI rewrites the discovery playbook",
+          "bullets": ["50-60% rules pre-captured", "6-week cycles", "SME load cut 70%"]
+        },
+        {
+          "type": "takeaway",
+          "headline": "Premium pricing through methodology",
+          "bullets": ["Fixed-fee enabled by AI scope confidence", "€236K landed, €700K pipeline", "Replicable across 9 OpCos"]
+        },
+        {
+          "type": "timeline",
+          "title": "AI-augmented discovery rollout",
+          "items": [
+            {"phase": "Week 1-2", "detail": "Code analysis (500K LoC)"},
+            {"phase": "Week 3-4", "detail": "Business rule extraction"},
+            {"phase": "Week 5-6", "detail": "SME validation sessions"}
+          ]
+        },
+        {
+          "type": "timeline",
+          "title": "5-OpCo phased deployment",
+          "items": [
+            {"phase": "Q1 2026", "detail": "Brazil discovery complete"},
+            {"phase": "Q2 2026", "detail": "Mexico discovery in flight"},
+            {"phase": "Q3-Q4 2026", "detail": "Remaining 3 OpCos planned"}
+          ]
+        },
+        {
+          "type": "roi",
+          "headline": "€500K invested → €1.2M ACR (2.4x)",
+          "investment": "€500K discovery engagement",
+          "return": "€1.2M projected annual cloud revenue"
+        },
+        {
+          "type": "risks",
+          "title": "3 risks identified, 3 mitigations deployed",
+          "items": [
+            {"risk": "Legacy code opacity", "mitigation": "AI reverse-engineering"},
+            {"risk": "SME availability", "mitigation": "Async pre-capture"},
+            {"risk": "Scope creep", "mitigation": "Fixed-fee discipline"}
+          ]
+        }
+      ],
+      "right": [
+        {
+          "type": "comparison",
+          "title": "Discovery Transformation",
+          "items": [
+            {"label": "Duration", "before": "Months", "after": "6 weeks", "change": "↓75%"},
+            {"label": "SME Load", "before": "Multi-day", "after": "4-8 hours", "change": "↓70%"}
+          ]
+        },
+        {
+          "type": "comparison",
+          "title": "Cost Structure",
+          "items": [
+            {"label": "Maintenance", "before": "€2M/yr", "after": "€0", "change": "Legacy retired"},
+            {"label": "Cloud", "before": "$0", "after": "$1.2M", "change": "New ACR"}
+          ]
+        },
+        {
+          "type": "kpi",
+          "value": "60%",
+          "label": "Business Rules Pre-Captured by AI",
+          "context": "vs. 0% with traditional discovery"
+        },
+        {
+          "type": "kpi",
+          "value": "$1.2M",
+          "label": "Annual Cloud Revenue Unlocked",
+          "context": "Recurring Azure consumption across compute + AI"
+        },
+        {
+          "type": "metrics",
+          "items": [
+            {"value": "$1.2M", "label": "Annual Cloud Revenue"},
+            {"value": "6", "label": "Azure services adopted"},
+            {"value": "9", "label": "OpCos modernized"}
+          ]
+        },
+        {
+          "type": "proof-points",
+          "items": [
+            {"label": "Azure MAP 2.0 funding approved"},
+            {"label": "HEINEKEN exec sponsorship secured"},
+            {"label": "LATAM delivery model certified"}
+          ]
+        }
+      ],
+      "notes": "All 6 candidates produced for both sides."
+    },
     "tech_architecture": [
       {"category": "Commerce Platforms", "description": "SAP Hybris (legacy) → Virto Commerce (.NET)"},
       {"category": "AI Layer", "description": "Anthropic Claude for code analysis and generation"},
@@ -450,12 +547,16 @@ Return valid JSON with VERSION-SPECIFIC fields for subtitle, challenge body, and
 
 - [ ] Title includes a metric
 - [ ] Challenge and solution are 2-4 sentences each, concrete
-- [ ] Page 2 has ONE block per side (left and right)
-- [ ] Blocks chosen for maximum business impact
-- [ ] Left and right columns use DIFFERENT block types
-- [ ] Timeline has ≤4 items, each detail ≤10 words
-- [ ] Comparison has ≤2 items (even grid)
-- [ ] Takeaway has ≤3 bullets, each ≤8 words
+- [ ] `page2.candidates.left` has 6 entries (or as many as the source supports, min 3)
+- [ ] `page2.candidates.right` has 6 entries (or as many as the source supports, min 3)
+- [ ] Left candidates use only `takeaway`, `timeline`, `roi`, or `risks`
+- [ ] Right candidates use only `comparison`, `kpi`, `metrics`, or `proof-points`
+- [ ] Each side covers at least 2 different block types across its 6 candidates
+- [ ] Each candidate makes a distinct "so what" — no near-duplicates
+- [ ] `page2.blocks` is left empty (the user fills it by picking)
+- [ ] Timeline candidates have ≤4 items, each detail ≤10 words
+- [ ] Comparison candidates have ≤2 items (even grid)
+- [ ] Takeaway candidates have ≤3 bullets, each ≤8 words
 - [ ] Tech architecture has 6 cards
 - [ ] Missing items flagged in "missing" array
 ```
@@ -465,5 +566,11 @@ Return valid JSON with VERSION-SPECIFIC fields for subtitle, challenge body, and
 After synthesis returns:
 
 1. Check `missing` array — ask user for any critical items
-2. Present consolidated content preview to user
-3. Get approval before building HTML/PDF
+2. Present `page2.candidates.left[]` and `page2.candidates.right[]` to the user as a
+   numbered list (6 left + 6 right). Ask them to reply with picks (e.g., "Left 2, Right 5").
+   See SKILL.md Step 2c for the exact presentation format.
+3. Apply the user's picks to `page2.blocks` (set `column: "left"` on the left pick and
+   `column: "right"` on the right pick). Drop `page2.candidates` from the data passed to
+   `build_html.py`.
+4. Present the consolidated content preview (now including the chosen page 2 blocks).
+5. Get approval before building HTML/PDF.

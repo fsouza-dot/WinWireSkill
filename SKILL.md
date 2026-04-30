@@ -390,86 +390,141 @@ If the user provided documents but no template, use "full extraction mode":
 6. **Create the data structure.** Combine synthesized content with user-provided metrics,
    then proceed to Step 2c (analyze raw pools for page 2 layout).
 
-### Step 2c: Analyze raw content pools and select page 2 layout
+### Step 2c: Generate page 2 candidates and let the user pick
 
-Phase 1 returns raw content pools in the `by_source[]` array — organized by source file, not
-final blocks. During Phase 2 synthesis, aggregate content across all files and select the best
-layout with visual variety.
+Page 2 always renders **ONE block per side**. The skill does NOT decide which block ships —
+the user does. Your job in this step is to craft **6 candidate "executive success pitches"
+per side** and present them so the user can pick one for the left column and one for the
+right column.
 
-1. **Score each pool** for content quality:
+This is a deliberate design choice: each candidate is a fully-formed pitch tuned to a
+different angle of the story, and the user is the best judge of which angle resonates with
+their audience. Never auto-select on the user's behalf.
 
-   | Quality signal | Score boost | Good for |
-   |----------------|-------------|----------|
-   | Has concrete numbers | +2 | `kpi`, `metrics`, `comparison` |
-   | Has before/after data | +2 | `comparison` |
-   | Has dates/phases | +1 | `timeline` |
-   | Has executive insight | +2 | `takeaway` |
-   | Multiple items (3+) | +1 | more options |
-   | Empty or single weak item | skip | — |
+#### Block type sets (disjoint by side)
 
-2. **Map raw categories to block types:**
+| Side | Eligible block types |
+|------|----------------------|
+| LEFT | `takeaway`, `timeline`, `roi`, `risks` |
+| RIGHT | `comparison`, `kpi`, `metrics`, `proof-points` |
 
-   | Raw category | Best block type | Look for | Skip if |
-   |--------------|-----------------|----------|---------|
-   | `notable_phrases` | `takeaway` | Executive "so what" insights | no compelling phrase |
-   | `metrics_outcomes` (single hero) | `kpi` | One impressive metric with trend | no standout metric |
-   | `metrics_outcomes` (multiple) | `metrics` | 2-4 quantified results | <2 items |
-   | `solutions_approaches` | `highlights` | Key achievements | empty |
-   | `metrics_outcomes` (before/after) | `comparison` | Transformation data | no before AND after |
-   | `dates_timelines` | `timeline` | Project phases with outcomes | <3 phases |
-   | `revenue_figures` (ROI story) | `roi` | Investment + returns | incomplete |
-   | `quotes_testimonials` | `proof-points` | Validations, certifications | <2 items |
-   | (risk management docs) | `risks` | Risk/mitigation pairs | <2 pairs |
+The two sets are disjoint, so whichever pair the user picks automatically satisfies
+"different block types per side" — no extra enforcement needed.
 
-3. **Enforce content limits** — page 2 must be scannable in 30 seconds:
+#### How to craft the 6 candidates per side
 
-   | Constraint | Limit |
-   |------------|-------|
-   | **Total blocks** | **ONE per side** (2 total) |
-   | Timeline items | MAX 4 |
-   | Comparison items | MAX 2 (even grid) |
-   | Takeaway bullets | MAX 3, each ≤8 words |
-   | Highlights items | MAX 3 |
-   | Any item detail | ≤10 words |
+Synthesize across the raw `by_source[]` pools to produce candidates that read like
+**executive success pitches** — not generic block fills. Each candidate should make a
+*different argument* about why this win matters, so the user has six meaningful choices,
+not six near-duplicates.
 
-   **Choose the 2 most impactful blocks**, prioritizing business impact metrics.
-   A dense wall of text looks amateur. White space is professional.
+For each side:
 
-4. **ONE block per side** — this is non-negotiable:
+1. **Score the available pools** (concrete numbers +2, before/after data +2, executive
+   insight +2, dates/phases +1, multiple items with 3+ entries +1).
 
-   - **Left side:** pick ONE from `takeaway`, `timeline`, `roi`, or `risks`
-   - **Right side:** pick ONE from `comparison`, `kpi`, `metrics`, or `proof-points`
-   - **NO EXCEPTIONS.** One block left, one block right. That's it.
+2. **Generate 6 distinct candidates.** Vary by **block type** AND by **angle**:
+   - Cover at least 2 different block types from the eligible set (e.g., 3 `takeaway`
+     variations + 2 `timeline` variations + 1 `roi` on the left).
+   - Each candidate should pitch a *different* "so what" — different metric framing,
+     different audience hook (CFO vs. CTO vs. partner exec), different narrative angle
+     (cost story, speed story, capability story, risk story).
+   - Apply the executive-grade writing standard from
+     `references/synthesis-agent-prompt.md`: concrete numbers, no banned words, active
+     voice, client as hero.
 
-5. **Present layout recommendation with alternatives** via `AskUserQuestion`:
+3. **Respect content limits per block** (timeline ≤4 items, comparison ≤2 items, takeaway
+   ≤3 bullets each ≤8 words, highlights ≤3 items, any item detail ≤10 words).
 
-   ```
-   📊 Recommended page 2 layout (ONE block per side):
-   
-   LEFT COLUMN:
-   └─ takeaway: "AI cuts discovery from months to weeks"
-       • 60% context pre-captured
-       • 6-week cycles vs months
-       • SME load cut 70%
-   
-   RIGHT COLUMN:
-   └─ comparison: Before/After Transformation
-       Discovery: Months → 6 weeks (↓75%)
-       SME Load: Multi-day → 4-8 hours (↓70%)
-   
-   📦 Available alternatives (swap one block for another):
-   • kpi: "60%" SME Context Pre-Captured
-   • timeline: 4 project phases
-   • highlights: 2 achievements
-   • proof-points: 3 validations
-   
-   Options:
-   - **Use recommended layout** ✓
-   - **Swap a block** (tell me which)
-   - **Skip page 2** (one-pager only)
-   ```
+4. **If fewer than 6 strong candidates exist for a side**, present what you have (minimum
+   3) and tell the user explicitly: "I could only craft N strong candidates for the [left|right]
+   side because [reason — e.g., docs lacked before/after metrics]." Do **not** pad with
+   weak filler just to hit 6.
 
-6. **Apply user's choice** and proceed to Step 3 with the finalized blocks.
+#### Presenting the candidates
+
+Show all 12 candidates (6 left + 6 right) in a single message, each numbered and clearly
+labeled with its block type. Format:
+
+```
+📊 PAGE 2 CANDIDATES — pick one from each side
+
+═══ LEFT COLUMN ═══
+
+L1. [takeaway] "AI cuts discovery from months to weeks"
+    • 60% rules pre-captured before SME interviews
+    • 6-week cycles vs 4-month marathons
+    • SME load reduced 70%
+
+L2. [timeline] AI-augmented discovery rollout
+    Week 1-2: Code analysis (500K LoC)
+    Week 3-4: Business rule extraction
+    Week 5-6: SME validation sessions
+
+L3. [takeaway] "Premium pricing through methodology differentiation"
+    • Fixed-fee enabled by AI-driven scope confidence
+    • €236K landed; €700K pipeline opened
+    • Replicable across 9 OpCos
+
+L4. [roi] €500K invested → €1.2M projected ACR (2.4x)
+
+L5. [risks] 3 risks identified, 3 mitigations deployed
+    • Legacy code opacity → AI reverse-engineering
+    • SME availability → async pre-capture
+    • Scope creep → fixed-fee discipline
+
+L6. [timeline] 5-OpCo phased deployment
+    ...
+
+═══ RIGHT COLUMN ═══
+
+R1. [comparison] Discovery Transformation
+    Duration: Months → 6 weeks (↓75%)
+    SME Load: Multi-day → 4-8 hours (↓70%)
+
+R2. [kpi] 60% — Business Rules Pre-Captured by AI
+    (vs. 0% with traditional discovery)
+
+R3. [metrics] Three impact numbers
+    • $1.2M Annual Cloud Revenue
+    • 6 Azure services adopted
+    • 9 OpCos modernized
+
+R4. [proof-points] Three external validations
+    • Azure MAP 2.0 funding approved
+    • HEINEKEN exec sponsorship secured
+    • LATAM delivery model certified
+
+R5. [comparison] Cost Structure
+    Maintenance: €2M/yr → €0 (legacy retired)
+    Cloud: $0 → $1.2M (new ACR)
+
+R6. [kpi] $1.2M — Annual Cloud Revenue Unlocked
+    (recurring Azure consumption across compute + AI)
+```
+
+Then ask the user for their picks in plain text:
+
+> Reply with your picks — e.g., **"Left 2, Right 5"**. If none of the candidates on a
+> side feel right, tell me which angle you'd prefer and I'll regenerate that side.
+
+**Why free text instead of `AskUserQuestion`:** `AskUserQuestion` caps at 4 options per
+question, but we need 6. Splitting into multiple 4-option questions or forcing the user
+through "Other" makes the interaction worse. A numbered list + free-text reply is cleaner.
+
+#### Apply the picks
+
+Once the user picks one from each side:
+
+1. Add the two chosen blocks to the data structure as `page2.blocks`, with `column:
+   "left"` and `column: "right"` set correctly.
+2. Discard the unpicked candidates.
+3. Proceed to Step 3 (content gate).
+
+If the user replies with only one pick (e.g., "Left 2") and no right pick, ask for the
+missing side before continuing. If the user wants entirely different candidates on a side
+("none of these — give me something more about partner enablement"), regenerate just that
+side and re-present its 6 candidates while keeping the other side's list intact.
 
 ### Step 3: Refine the summary and present for approval
 
@@ -567,37 +622,20 @@ Metrics: $1.2M ACR | 6 Azure Services | 60% Faster Discovery
 
 The user approves BOTH versions in one gate. They can edit either angle separately.
 
-#### 🛑 Page 2 block count and variety — BLOCKING CHECK
+#### 🛑 Page 2 sanity check
 
 Before showing the approval question, verify:
-1. **ONE block per side** — no more, no exceptions
-2. **Different block types** on each side
 
-Violations must be resolved with the user first — do not proceed to approval.
+1. `page2.blocks` has **exactly two entries** — one with `column: "left"`, one with
+   `column: "right"`.
+2. The left block's type is in `{takeaway, timeline, roi, risks}` and the right block's
+   type is in `{comparison, kpi, metrics, proof-points}`.
 
-When violations occur:
+If either condition fails, you skipped Step 2c — go back and run the candidate-and-pick
+flow before continuing. Do not improvise the page 2 layout.
 
-1. **Flag the problem explicitly:**
-   > "⚠️ Page 2 needs adjustment: [too many blocks / same block type on both sides]"
-
-2. **Offer the recommended layout (exactly 2 blocks):**
-   > "I recommend:
-   > - **Left column:** `takeaway` — executive insight with 3 key bullets
-   > - **Right column:** `comparison` — before/after transformation showing business impact
-   >
-   > This gives you two distinct visual patterns focused on business impact."
-
-3. **Ask the user to choose** via `AskUserQuestion`:
-   - Question: "How should I fix the page 2 layout?"
-   - Options:
-     - **Use recommended layout** (2 blocks total)
-     - **Let me specify the 2 block types**
-     - **Skip page 2** (one-pager only)
-
-4. **Only after the user responds**, proceed to the content approval question.
-
-**Do NOT bundle this into a single "notes" section and continue.** Layout must be
-resolved as a separate interaction before content approval.
+(Block-type variety between sides is guaranteed by the disjoint sets, so there is no
+separate "different types" check needed once Step 2c is followed.)
 
 #### Content approval question
 
@@ -620,8 +658,9 @@ Then, in the SAME message (but AFTER the preview), **call `AskUserQuestion`**:
   re-ask the approval question. Don't build anything in between.
 - If the user's message is ambiguous ("looks good" / "ok" / "sure") without picking one of the
   three options, re-ask the approval question explicitly — don't assume.
-- **Block variety violations must be resolved BEFORE content approval.** Do not present the
-  approval question if page 2 columns use the same primary block type — fix it first.
+- **Page 2 picks must be in `page2.blocks` before approval.** If you forgot Step 2c (the
+  6-candidate pick), do that first — do not present the approval question with auto-picked
+  blocks.
 
 ### Step 4: Build everything (only after the content gate passes)
 
