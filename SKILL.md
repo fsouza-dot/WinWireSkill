@@ -392,14 +392,26 @@ If the user provided documents but no template, use "full extraction mode":
 
 ### Step 2c: Generate page 2 candidates and let the user pick
 
-Page 2 always renders **ONE block per side**. The skill does NOT decide which block ships —
-the user does. Your job in this step is to craft **6 candidate "executive success pitches"
-per side** and present them so the user can pick one for the left column and one for the
-right column.
+#### End state — non-negotiable
+
+Page 2 ships with **exactly ONE block on the left and exactly ONE block on the right**.
+Two total. Never two on a side, never three total, never an extra "backup" block.
+`page2.blocks` MUST end Step 2c with length 2: one entry where `column == "left"` and one
+where `column == "right"`. The build script (`build_html.py`) will hard-truncate any extra
+blocks and warn on stderr — that means upstream went wrong and you should fix it, not let
+the truncation paper over it.
+
+#### What this step does
+
+The skill does NOT decide which block ships — the user does. Your job is to craft **6
+candidate "executive success pitches" per side** and present them so the user picks
+**one** for the left column and **one** for the right column.
 
 This is a deliberate design choice: each candidate is a fully-formed pitch tuned to a
 different angle of the story, and the user is the best judge of which angle resonates with
-their audience. Never auto-select on the user's behalf.
+their audience. Never auto-select on the user's behalf, and never ship more than one
+block per side even if two candidates feel "almost equally strong" — make the user pick
+one.
 
 #### Block type sets (disjoint by side)
 
@@ -516,10 +528,16 @@ through "Other" makes the interaction worse. A numbered list + free-text reply i
 
 Once the user picks one from each side:
 
-1. Add the two chosen blocks to the data structure as `page2.blocks`, with `column:
-   "left"` and `column: "right"` set correctly.
-2. Discard the unpicked candidates.
+1. Set `page2.blocks` to **exactly two entries**: the left pick (with `column: "left"`)
+   and the right pick (with `column: "right"`). Length 2 — no more, no less.
+2. **Discard everything else.** Drop the other 5 left candidates, the other 5 right
+   candidates, and the entire `page2.candidates` object before passing data to
+   `build_html.py`. Do not keep "backup" blocks in `page2.blocks`.
 3. Proceed to Step 3 (content gate).
+
+**Verification before Step 3:** `len(page2.blocks) == 2`, with one `left` and one `right`.
+If either side has 0 or >1 blocks, you have a bug — fix it now, do not rely on
+`build_html.py`'s truncation safety net.
 
 If the user replies with only one pick (e.g., "Left 2") and no right pick, ask for the
 missing side before continuing. If the user wants entirely different candidates on a side

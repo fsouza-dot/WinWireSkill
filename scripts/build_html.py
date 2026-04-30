@@ -607,11 +607,18 @@ def build_page2_flexible(blocks, title, footer_text, tech_architecture=None, tec
             print(f"   Right column: {right_types}")
             print(f"   Suggestions: timeline, comparison, kpi, metrics, takeaway, highlights")
 
-    # Check for page density — ONE block per side, no exceptions
+    # Hard cap: ONE block per side, no exceptions. If upstream sent more,
+    # keep only the first per side and log to stderr. The rendered output
+    # is guaranteed to have at most one block per column.
     if len(left_blocks) > 1 or len(right_blocks) > 1:
-        print(f"⚠️  WARNING: Page 2 has too many blocks.")
-        print(f"   Left: {len(left_blocks)} blocks, Right: {len(right_blocks)} blocks")
-        print(f"   RULE: ONE block per side. Pick the most impactful for each side.")
+        print(
+            f"⚠️  Page 2 had too many blocks "
+            f"(left: {len(left_blocks)}, right: {len(right_blocks)}); "
+            f"truncated to 1 per side. RULE: ONE block per side, no exceptions.",
+            file=sys.stderr,
+        )
+        left_blocks = left_blocks[:1]
+        right_blocks = right_blocks[:1]
 
     # Check for oversized blocks
     for b in left_blocks + right_blocks:
